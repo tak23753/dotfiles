@@ -11,3 +11,15 @@ for dotfile in "${SCRIPT_DIR}"/.??* ; do
 
     ln -fnsv "$dotfile" "$HOME"
 done
+
+case "${OSTYPE}" in
+    darwin*)
+        ${SCRIPT_DIR}/mac/init.sh
+        ${SCRIPT_DIR}/mac/defaults.sh
+        ${SCRIPT_DIR}/mac/brew.sh
+        ${SCRIPT_DIR}/mac/karabiner.sh
+        ;;
+    linux*)
+        # Linux
+        ;;
+esac

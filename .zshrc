@@ -4,29 +4,11 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
-# path
-typeset -U path PATH
-path=(
-  /opt/homebrew/bin(N-/)
-  /opt/homebrew/sbin(N-/)
-  /usr/bin
-  /usr/sbin
-  /bin
-  /sbin
-  /usr/local/bin(N-/)
-  /usr/local/sbin(N-/)
-  /Library/Apple/usr/bin
-)
-
-# 1password
-export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
-
-# psql
-export PATH="/usr/local/opt/libpq/bin:$PATH"
-
-# docker compose
-export COMPOSE_DOCKER_CLI_BUILD=1
+# ---------------------------------------------------------
+# Base settings
+# ---------------------------------------------------------
 
 # ヒストリ (履歴) を保存、数を増やす
 HISTFILE=~/.zsh_history
@@ -54,6 +36,10 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # コマンドのスペルを訂正する
 setopt correct
 
+# ---------------------------------------------------------
+# Zinit
+# ---------------------------------------------------------
+
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
     print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
@@ -77,6 +63,7 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
+### Begin of plugin settings
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
 zinit light zsh-users/zsh-syntax-highlighting
@@ -85,9 +72,35 @@ zinit light zsh-users/zsh-completions
 zinit light mollifier/anyframe
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+### End of plugin settings
+
+# ---------------------------------------------------------
+# Anyframe
+# ---------------------------------------------------------
 
 bindkey '^r' anyframe-widget-execute-history
 bindkey '^b' anyframe-widget-checkout-git-branch
 bindkey '^t' anyframe-widget-cdr
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
+
+# ---------------------------------------------------------
+# Import zsh files
+# ---------------------------------------------------------
+case ${OSTYPE} in
+  darwin*)
+    ZSH_DIR="${HOME}/.zsh/mac"
+    ;;
+  linux*)
+    ZSH_DIR="${HOME}/.zsh/linux"
+    ;;
+esac
+
+# ZSH_DIRがディレクトリで、読み取り、実行、が可能なとき
+if [ -d $ZSH_DIR ] && [ -r $ZSH_DIR ] && [ -x $ZSH_DIR ]; then
+    # zshディレクトリより下にある、.zshファイルの分、繰り返す
+    for file in ${ZSH_DIR}/**/*.zsh; do
+        # 読み取り可能ならば実行する
+        [ -r $file ] && source $file
+    done
+fi
