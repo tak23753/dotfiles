@@ -17,7 +17,7 @@ case "${OSTYPE}" in
         ${SCRIPT_DIR}/mac/init.sh
         ${SCRIPT_DIR}/mac/defaults.sh
         ${SCRIPT_DIR}/mac/brew.sh
-        ${SCRIPT_DIR}/mac/karabiner.sh
+        ${SCRIPT_DIR}/mac/link.sh
         ;;
     linux*)
         # Linux

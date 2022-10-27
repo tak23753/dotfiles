@@ -4,6 +4,7 @@ tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-versions"
 tap "homebrew/core"
+tap "homebrew/cask-drivers"
 
 brew "cliclick"
 brew "curl"
@@ -23,6 +24,8 @@ brew "aquasecurity/trivy/trivy"
 brew "peco"
 brew "mas"
 brew "graphviz"
+brew "nvm"
+brew "kayac/tap/ecspresso"
 
 cask "alfred"
 cask "bettertouchtool"
@@ -38,6 +41,9 @@ cask "popclip"
 cask "pushplaylabs-sidekick"
 cask "tableplus"
 cask "adoptopenjdk"
+cask "alt-tab"
+
+cask "logi-options-plus"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
 mas "LINE", id:539883307
