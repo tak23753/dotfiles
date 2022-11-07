@@ -42,6 +42,7 @@ cask "pushplaylabs-sidekick"
 cask "tableplus"
 cask "adoptopenjdk"
 cask "alt-tab"
+cask "warp"
 
 cask "logi-options-plus"
 
