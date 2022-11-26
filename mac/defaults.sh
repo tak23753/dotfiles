@@ -7,81 +7,71 @@ if [ "$(uname)" != "Darwin" ] ; then
 	exit 1
 fi
 
-# ====================
-#
+# ---------------------------------------------------------
 # Track Pad
-#
-# ====================
+# ---------------------------------------------------------
 
-# Tap to click
+# シングルタップでクリックする
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults -currentHost write -g com.apple.mouse.tapBehavior -bool true
 
-# Tracking speed
+# カーソル移動速度を速くする
 defaults write -g com.apple.trackpad.scaling -int 3
 
-# Key Repeat and Delay Until Repeat
+# ---------------------------------------------------------
+# Keyboard
+# ---------------------------------------------------------
+
+# キーリピートの反応速度を速くする
 defaults write -g InitialKeyRepeat -int 15
 defaults write -g KeyRepeat -int 2
 
-# ====================
-#
+# ---------------------------------------------------------
 # Dock & Menu bar
-#
-# ====================
+# ---------------------------------------------------------
 
-# Automatically hide and show
+# 自動的に非表示にする
 defaults write com.apple.dock autohide -bool true
 
-# Show quickly
+# 表示スピードを速くする
 defaults write com.apple.dock autohide-time-modifier -int 0
 
-# Disable animation at application launch
+# アプリケーション起動時のアニメーションを無効化
 defaults write com.apple.dock launchanim -bool false
 
-# Do not display recent apps
+# 最近起動したアプリを非表示
 defaults write com.apple.dock show-recents -bool false
 
-# Show menu bar in full screen
+# フルスクリーン時にメニューバーを表示
 # defaults write NSGlobalDomain AppleMenuBarVisibleInFullscreen -bool false
 
-# ====================
-#
+# ---------------------------------------------------------
 # Finder
-#
-# ====================
+# ---------------------------------------------------------
 
-
-# Disable animation
+# アニメーション無効化
 defaults write com.apple.finder DisableAllAnimations -bool true
 
-# Show hidden files by default
+# 隠しファイルを表示
 defaults write com.apple.finder AppleShowAllFiles -bool true
 
-# Show files with all extensions
+# 拡張子を表示
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-# Display the status bar
+# ステータスバーを表示
 defaults write com.apple.finder ShowStatusBar -bool true
 
-# Display the path bar
+# パスバーを表示
 defaults write com.apple.finder ShowPathbar -bool true
 
-# ====================
-#
-# SystemUIServer
-#
-# ====================
 
-# Display battery level in the menu bar
-defaults write com.apple.menuextra.battery ShowPercent -string "YES"
-
+# ---------------------------------------------------------
+# Activate
+# ---------------------------------------------------------
 
 for app in "Dock" \
 	"Finder" \
 	"SystemUIServer"; do
 	killall "${app}" &> /dev/null
 done
-
-
-# sudo reboot
