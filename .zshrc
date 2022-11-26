@@ -25,6 +25,7 @@ HISTSIZE=100000
 SAVEHIST=100000
 
 # 同時に起動した zsh の間でヒストリを共有する
+setopt inc_append_history
 setopt share_history
 
 # 直前と同じコマンドの場合はヒストリに追加しない
@@ -39,14 +40,20 @@ setopt hist_ignore_space
 # ヒストリに保存するときに余分なスペースを削除する
 setopt hist_reduce_blanks
 
+# 補完を有効化
+autoload -Uz compinit && compinit
+
 # 補完で小文字でも大文字にマッチさせる
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# 補完候補をTabや矢印で選択可能
+zstyle ':completion:*:default' menu select=1
 
 # コマンドのスペルを訂正する
 setopt correct
 
 # ---------------------------------------------------------
-# Zinit
+# Zinit's Installer
 # ---------------------------------------------------------
 
 ### Added by Zinit's installer
@@ -72,7 +79,10 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
-### Begin of plugin settings
+# ---------------------------------------------------------
+# Plugin
+# ---------------------------------------------------------
+
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
 zinit light zsh-users/zsh-syntax-highlighting
@@ -81,7 +91,6 @@ zinit light zsh-users/zsh-completions
 zinit light mollifier/anyframe
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-### End of plugin settings
 
 # ---------------------------------------------------------
 # Anyframe
