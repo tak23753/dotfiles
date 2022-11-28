@@ -31,3 +31,10 @@ if !(type "session-manager-plugin" > /dev/null 2>&1); then
 	sudo ./sessionmanager-bundle/install -i /usr/local/sessionmanagerplugin -b /usr/local/bin/session-manager-plugin
 	rm -rf sessionmanager-bundle sessionmanager-bundle.zip
 fi
+
+# Install Finch
+LOCATION=$(curl -s https://api.github.com/repos/runfinch/finch/releases/latest \
+| grep "tag_name" \
+| awk '{print "https://github.com/runfinch/finch/releases/download/" substr($2, 2, length($2)-3) "/Finch-" substr($2, 2, length($2)-3) "-aarch64.pkg" }')
+curl $LOCATION -o /tmp/finch_installer.pkg
+installer -pkg /tmp/finch_installer.pkg
