@@ -38,6 +38,7 @@ cask "tableplus"
 cask "adoptopenjdk"
 cask "google-chrome"
 cask "notion"
+cask "altair-graphql-client"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
 mas "LINE", id:539883307
