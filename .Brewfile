@@ -24,6 +24,11 @@ brew "mas"
 brew "graphviz"
 brew "nvm"
 brew "kayac/tap/ecspresso"
+brew "fujiwara/tap/tracer"
+brew "jq"
+brew "pre-commit"
+brew "aquaproj/aqua/aqua"
+brew "volta"
 
 cask "alfred"
 cask "docker"
@@ -38,7 +43,8 @@ cask "tableplus"
 cask "adoptopenjdk"
 cask "google-chrome"
 cask "notion"
-cask "vivaldi"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
 mas "LINE", id:539883307
+mas "Yoink", id:457622435
+mas "Mail for Gmail", id:1216244845

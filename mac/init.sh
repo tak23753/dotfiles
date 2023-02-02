@@ -19,7 +19,7 @@ if !(type "brew" > /dev/null 2>&1); then
 fi
 
 # Install rosetta
-sudo softwareupdate --install-rosetta
+# sudo softwareupdate --install-rosetta
 
 # Install zinit
 bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
@@ -32,9 +32,3 @@ if !(type "session-manager-plugin" > /dev/null 2>&1); then
 	rm -rf sessionmanager-bundle sessionmanager-bundle.zip
 fi
 
-# Install Finch
-LOCATION=$(curl -s https://api.github.com/repos/runfinch/finch/releases/latest \
-| grep "tag_name" \
-| awk '{print "https://github.com/runfinch/finch/releases/download/" substr($2, 2, length($2)-3) "/Finch-" substr($2, 2, length($2)-3) "-aarch64.pkg" }')
-curl $LOCATION -o /tmp/finch_installer.pkg
-installer -pkg /tmp/finch_installer.pkg
