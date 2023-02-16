@@ -5,6 +5,7 @@ tap "homebrew/cask"
 tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/cask-drivers"
+tap "brew tap shivammathur/php"
 
 brew "curl"
 brew "git"
@@ -22,13 +23,14 @@ brew "aquasecurity/trivy/trivy"
 brew "peco"
 brew "mas"
 brew "graphviz"
-brew "nvm"
 brew "kayac/tap/ecspresso"
 brew "fujiwara/tap/tracer"
 brew "jq"
 brew "pre-commit"
 brew "aquaproj/aqua/aqua"
 brew "volta"
+brew "direnv"
+brew "shivammathur/php/php@7.4", link: true
 
 cask "alfred"
 cask "docker"
@@ -43,6 +45,8 @@ cask "tableplus"
 cask "adoptopenjdk"
 cask "google-chrome"
 cask "notion"
+cask "fig"
+cask "sidenotes"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
 mas "LINE", id:539883307
