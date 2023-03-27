@@ -8,6 +8,13 @@ if [ "$(uname)" != "Darwin" ] ; then
 fi
 
 # ---------------------------------------------------------
+# Preferences
+# ---------------------------------------------------------
+
+# ダークモードを有効化
+defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
+
+# ---------------------------------------------------------
 # Track Pad
 # ---------------------------------------------------------
 
@@ -43,8 +50,8 @@ defaults write com.apple.dock launchanim -bool false
 # 最近起動したアプリを非表示
 defaults write com.apple.dock show-recents -bool false
 
-# フルスクリーン時にメニューバーを表示
-# defaults write NSGlobalDomain AppleMenuBarVisibleInFullscreen -bool false
+# メニューバーを常に表示
+defaults write -g AppleMenuBarVisibleInFullscreen -bool true
 
 # ---------------------------------------------------------
 # Finder
@@ -65,6 +72,19 @@ defaults write com.apple.finder ShowStatusBar -bool true
 # パスバーを表示
 defaults write com.apple.finder ShowPathbar -bool true
 
+# ---------------------------------------------------------
+# Shortcut
+# ---------------------------------------------------------
+
+# Spotlightを無効化
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "<dict><key>enabled</key><false/></dict>"
+
+# ---------------------------------------------------------
+# Display
+# ---------------------------------------------------------
+
+# 視差効果を無効化
+defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
 
 # ---------------------------------------------------------
 # Activate

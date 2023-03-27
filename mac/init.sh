@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -eux
 
 if [ "$(uname)" != "Darwin" ] ; then
 	echo "Not macOS!"
@@ -9,17 +9,14 @@ fi
 
 
 # Install xcode
-if !(type "xcode-select" > /dev/null 2>&1); then
-	xcode-select --install > /dev/null
-fi
-
-# Install brew
-if !(type "brew" > /dev/null 2>&1); then
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" > /dev/null
-fi
+# if !(type "xcode-select" > /dev/null 2>&1); then
+# 	xcode-select --install > /dev/null
+# fi
 
 # Install rosetta
-# sudo softwareupdate --install-rosetta
+if !(type "arch" > /dev/null 2>&1); then
+	softwareupdate --install-rosetta --agree-to-license
+fi
 
 # Install zinit
 bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
@@ -31,4 +28,3 @@ if !(type "session-manager-plugin" > /dev/null 2>&1); then
 	sudo ./sessionmanager-bundle/install -i /usr/local/sessionmanagerplugin -b /usr/local/bin/session-manager-plugin
 	rm -rf sessionmanager-bundle sessionmanager-bundle.zip
 fi
-

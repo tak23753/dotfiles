@@ -5,7 +5,7 @@ tap "homebrew/cask"
 tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/cask-drivers"
-tap "brew tap shivammathur/php"
+tap "shivammathur/php"
 
 brew "curl"
 brew "git"
@@ -32,6 +32,7 @@ brew "direnv"
 brew "shivammathur/php/php@7.4", link: true
 
 cask "alfred"
+cask "slack"
 cask "docker"
 cask "google-japanese-ime"
 cask "iterm2"
@@ -46,8 +47,10 @@ cask "google-chrome"
 cask "notion"
 cask "fig"
 cask "sidenotes"
+cask "spotify"
+cask "raindropio"
+cask "dropbox"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
-mas "LINE", id:539883307
 mas "Yoink", id:457622435
-mas "Mail for Gmail", id:1216244845
+mas "Toggl Track: Hours & Time Log", id:1291898086

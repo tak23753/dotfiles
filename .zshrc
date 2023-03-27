@@ -12,8 +12,12 @@ fi
 # ---------------------------------------------------------
 # Aliases
 # ---------------------------------------------------------
+
+# Terraform
 alias tf="terraform"
 alias tg="terragrunt"
+
+# Git
 alias add="git add"
 alias commit="git commit"
 alias stash="git stash"
@@ -21,6 +25,8 @@ alias push="git push"
 alias pull="git pull"
 alias check="git checkout"
 alias fetch="git fetch"
+alias merge="git merge"
+alias rebase="git rebase"
 
 # ---------------------------------------------------------
 # Base settings
