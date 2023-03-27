@@ -21,8 +21,12 @@ case "${OSTYPE}" in
 esac
 
 # dotfilesをクローン
-if [ basename $PWD != "dotfiles" && ! -d dotfiles ]; then
+if [ "$(basename $PWD)" != "dotfiles" ] && [ ! -d dotfiles ]; then
     git clone https://github.com/Fukiwake/dotfiles.git
+fi
+
+# dotfilesディレクトリが存在する場合は、そのディレクトリに移動
+if [ -d dotfiles ]; then
     cd dotfiles
 fi
 

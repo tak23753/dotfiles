@@ -5,6 +5,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # karabinerのキー設定
+mkdir -p "$HOME/.config/karabiner/assets/complex_modifications"
 for f in "${SCRIPT_DIR}"/settings/karabiner/* ; do
     ln -fnsv "$f" "$HOME/.config/karabiner/assets/complex_modifications/"
 done
