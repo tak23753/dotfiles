@@ -50,6 +50,7 @@ cask "sidenotes"
 cask "spotify"
 cask "raindropio"
 cask "dropbox"
+cask "session-manager-plugin"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
 mas "Yoink", id:457622435

@@ -19,12 +19,4 @@ if !(type "arch" > /dev/null 2>&1); then
 fi
 
 # Install zinit
-bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-
-# Install Session Manager
-if !(type "session-manager-plugin" > /dev/null 2>&1); then
-	curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip" -o "sessionmanager-bundle.zip"
-	unzip sessionmanager-bundle.zip
-	sudo ./sessionmanager-bundle/install -i /usr/local/sessionmanagerplugin -b /usr/local/bin/session-manager-plugin
-	rm -rf sessionmanager-bundle sessionmanager-bundle.zip
-fi
+# bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"

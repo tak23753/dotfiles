@@ -31,8 +31,8 @@ defaults write -g com.apple.trackpad.scaling -int 3
 # ---------------------------------------------------------
 
 # キーリピートの反応速度を速くする
-defaults write -g InitialKeyRepeat -int 15
-defaults write -g KeyRepeat -int 2
+defaults write -g InitialKeyRepeat -int 12
+defaults write -g KeyRepeat -int 1
 
 # ---------------------------------------------------------
 # Dock & Menu bar
