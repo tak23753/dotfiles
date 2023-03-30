@@ -25,12 +25,14 @@ if [ "$(basename $PWD)" != "dotfiles" ] && [ ! -d dotfiles ]; then
     git clone https://github.com/Fukiwake/dotfiles.git
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # dotfilesディレクトリが存在する場合は、そのディレクトリに移動
-if [ -d dotfiles ]; then
-    cd dotfiles
+if [ -d "${SCRIPT_DIR}/dotfiles" ]; then
+    cd "${SCRIPT_DIR}/dotfiles"
+    SCRIPT_DIR="${SCRIPT_DIR}/dotfiles"
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # dotfilesのシンボリックリンクを作成
 for dotfile in "${SCRIPT_DIR}"/.??* ; do
