@@ -79,6 +79,9 @@ defaults write com.apple.finder ShowPathbar -bool true
 # Spotlightを無効化
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "<dict><key>enabled</key><false/></dict>"
 
+# Finderを無効化
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65 "<dict><key>enabled</key><false/></dict>"
+
 # ---------------------------------------------------------
 # Display
 # ---------------------------------------------------------
