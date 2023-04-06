@@ -51,7 +51,9 @@ cask "spotify"
 cask "raindropio"
 cask "dropbox"
 cask "session-manager-plugin"
+cask "microsoft-excel"
 
 mas "Flow - Focus & Pomodoro Timer", id:1423210932
 mas "Yoink", id:457622435
 mas "Toggl Track: Hours & Time Log", id:1291898086
+mas "Trello", id:1278508951

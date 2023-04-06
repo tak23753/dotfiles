@@ -31,8 +31,8 @@ defaults write -g com.apple.trackpad.scaling -int 3
 # ---------------------------------------------------------
 
 # キーリピートの反応速度を速くする
-defaults write -g InitialKeyRepeat -int 12
-defaults write -g KeyRepeat -int 1
+defaults write -g InitialKeyRepeat -int 15
+defaults write -g KeyRepeat -int 2
 
 # ---------------------------------------------------------
 # Dock & Menu bar
@@ -52,6 +52,9 @@ defaults write com.apple.dock show-recents -bool false
 
 # メニューバーを常に表示
 defaults write -g AppleMenuBarVisibleInFullscreen -bool true
+
+# メニューバーにbluetoothとairdropを表示
+defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
 
 # ---------------------------------------------------------
 # Finder

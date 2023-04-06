@@ -2,5 +2,5 @@
 volta install node
 volta install npm
 
-# Install npm packages
-
+# Install packages
+npm install -g @githubnext/github-copilot-cli
