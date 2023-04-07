@@ -15,8 +15,11 @@ case "${OSTYPE}" in
             brew install git
         fi
         ;;
-    linux*)
-        # Linux
+    linux-gnu)
+        # Install git
+        if !(type "git" > /dev/null 2>&1); then
+            apt-get install -y git
+        fi
         ;;
 esac
 
@@ -52,7 +55,9 @@ case "${OSTYPE}" in
         ${SCRIPT_DIR}/mac/link.sh
         ${SCRIPT_DIR}/mac/after_install.sh
         ;;
-    linux*)
-        # Linux
+    linux-gnu)
+        apt-get update
+        xargs -a ${SCRIPT_DIR}/linux/packages.txt apt-get install -y
+        chsh -s $(which zsh)
         ;;
 esac
