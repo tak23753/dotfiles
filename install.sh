@@ -58,6 +58,5 @@ case "${OSTYPE}" in
     linux-gnu)
         apt-get update
         xargs -a ${SCRIPT_DIR}/linux/packages.txt apt-get install -y
-        chsh -s $(which zsh)
         ;;
 esac
