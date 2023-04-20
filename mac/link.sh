@@ -15,6 +15,14 @@ ln -fnsv "${SCRIPT_DIR}/etc/karabiner.json" "$HOME/.config/karabiner/"
 for f in "${SCRIPT_DIR}"/etc/fonts/* ; do
     cp "$f" "$HOME/Library/Fonts/"
 done
+# cp "${SCRIPT_DIR}/etc/MesloLGS NF Regular.ttf" "$HOME/Library/Fonts/"
+
+# Google日本語入力の設定
+# ln -fnsv "${SCRIPT_DIR}/etc/user_dictionary.db" "$HOME/Library/Application Support/Google/JapaneseInput/"
+
+# awsの設定
+mkdir -p "$HOME/.aws"
+ln -fnsv "${SCRIPT_DIR}/etc/.aws/config" "$HOME/.aws/"
 
 # sshの設定
 mkdir -p "$HOME/.ssh"

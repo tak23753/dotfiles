@@ -23,7 +23,7 @@ case "${OSTYPE}" in
         ;;
 esac
 
-# dotfilesディレクトリが存在しない&dotfiles配下ではない場合は、git clone
+# dotfilesをクローン
 if [ "$(basename $PWD)" != "dotfiles" ] && [ ! -d dotfiles ]; then
     git clone https://github.com/Fukiwake/dotfiles.git
 fi
@@ -45,13 +45,6 @@ for dotfile in "${SCRIPT_DIR}"/.??* ; do
 
     ln -fnsv "$dotfile" "$HOME"
 done
-
-# その他のシンボリックリンクを作成
-mkdir -p "$HOME/.aws"
-ln -fnsv "${SCRIPT_DIR}/etc/.aws/config" "$HOME/.aws/"
-
-# 全OS共通の設定
-${SCRIPT_DIR}/common/link.sh
 
 # OSごとの設定
 case "${OSTYPE}" in
