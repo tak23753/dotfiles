@@ -3,3 +3,4 @@ git
 vim
 zsh
 curl
+openssh-client

@@ -28,6 +28,9 @@ alias fetch="git fetch"
 alias merge="git merge"
 alias rebase="git rebase"
 
+# Github Copilot Cli
+eval "$(github-copilot-cli alias -- "$0")"
+
 # ---------------------------------------------------------
 # Base settings
 # ---------------------------------------------------------
