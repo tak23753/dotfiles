@@ -22,7 +22,7 @@ done
 
 # awsの設定
 mkdir -p "$HOME/.aws"
-ln -fnsv "${SCRIPT_DIR}/etc/.aws/config" "$HOME/.aws/"
+cp -f "${SCRIPT_DIR}/etc/.aws/config" "$HOME/.aws/config"
 
 # sshの設定
 mkdir -p "$HOME/.ssh"
