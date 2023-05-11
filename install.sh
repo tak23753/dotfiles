@@ -53,6 +53,7 @@ case "${OSTYPE}" in
         ${SCRIPT_DIR}/mac/defaults.sh
         ${SCRIPT_DIR}/mac/brew.sh
         ${SCRIPT_DIR}/mac/link.sh
+        ${SCRIPT_DIR}/mac/command.sh
         ${SCRIPT_DIR}/mac/after_install.sh
         ;;
     linux-gnu)

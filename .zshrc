@@ -151,6 +151,9 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 # aqua
 export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
 
+# custom commands
+export PATH="$HOME/commands:$PATH"
+
 # Github Copilot Cli
 eval "$(github-copilot-cli alias -- "$0")"
 
