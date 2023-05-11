@@ -7,8 +7,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-
-
 # ---------------------------------------------------------
 # Aliases
 # ---------------------------------------------------------
@@ -27,9 +25,6 @@ alias check="git checkout"
 alias fetch="git fetch"
 alias merge="git merge"
 alias rebase="git rebase"
-
-# Github Copilot Cli
-eval "$(github-copilot-cli alias -- "$0")"
 
 # ---------------------------------------------------------
 # Base settings
@@ -107,6 +102,7 @@ zinit light zsh-users/zsh-completions
 zinit light mollifier/anyframe
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # ---------------------------------------------------------
 # Anyframe
@@ -154,6 +150,9 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 
 # aqua
 export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
+
+# Github Copilot Cli
+eval "$(github-copilot-cli alias -- "$0")"
 
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
