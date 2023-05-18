@@ -155,7 +155,9 @@ export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua
 export PATH="$HOME/commands:$PATH"
 
 # Github Copilot Cli
-eval "$(github-copilot-cli alias -- "$0")"
+if (type "github-copilot-cli" > /dev/null 2>&1); then
+    eval "$(github-copilot-cli alias -- "$0")"
+fi
 
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)

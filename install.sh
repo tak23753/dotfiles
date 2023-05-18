@@ -57,7 +57,7 @@ case "${OSTYPE}" in
         ${SCRIPT_DIR}/mac/after_install.sh
         ;;
     linux-gnu)
-        apt-get update
-        xargs -a ${SCRIPT_DIR}/linux/packages.txt apt-get install -y
+        apt update
+        xargs -a ${SCRIPT_DIR}/linux/packages.txt apt install -y
         ;;
 esac
