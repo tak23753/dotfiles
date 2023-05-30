@@ -118,10 +118,10 @@ add-zsh-hook chpwd chpwd_recent_dirs
 # Import zsh files
 # ---------------------------------------------------------
 case ${OSTYPE} in
-  darwin*)
+    darwin*)
     ZSH_DIR="${HOME}/.zsh/mac"
     ;;
-  linux*)
+    linux*)
     ZSH_DIR="${HOME}/.zsh/linux"
     ;;
 esac
@@ -158,6 +158,16 @@ export PATH="$HOME/commands:$PATH"
 if (type "github-copilot-cli" > /dev/null 2>&1); then
     eval "$(github-copilot-cli alias -- "$0")"
 fi
+
+# awsp
+alias awsp=aws_profile_update
+function aws_profile_update() {
+    PROFILES=$(aws configure list-profiles)
+    PROFILES_ARRAY=($(echo $PROFILES))
+    SELECTED_PROFILE=$(echo $PROFILES | peco)
+
+    [[ -n ${PROFILES_ARRAY[(re)${SELECTED_PROFILE}]} ]] && export AWS_PROFILE=${SELECTED_PROFILE}; echo 'Updated profile' || echo ''
+}
 
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
