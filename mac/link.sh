@@ -21,8 +21,8 @@ done
 # ln -fnsv "${SCRIPT_DIR}/etc/user_dictionary.db" "$HOME/Library/Application Support/Google/JapaneseInput/"
 
 # awsの設定
-mkdir -p "$HOME/.aws"
-cp -f "${SCRIPT_DIR}/etc/.aws/config" "$HOME/.aws/config"
+# mkdir -p "$HOME/.aws"
+# cp -f "${SCRIPT_DIR}/etc/.aws/config" "$HOME/.aws/config"
 
 # sshの設定
 mkdir -p "$HOME/.ssh"
