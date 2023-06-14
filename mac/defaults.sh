@@ -34,6 +34,9 @@ defaults write -g com.apple.trackpad.scaling -int 3
 defaults write -g InitialKeyRepeat -int 15
 defaults write -g KeyRepeat -int 2
 
+# 日本語入力でWindows風のキー操作を有効にする
+defaults write com.apple.inputmethod.Kotoeri JIMPrefWindowsModeKey -bool true
+
 # ---------------------------------------------------------
 # Dock & Menu bar
 # ---------------------------------------------------------
