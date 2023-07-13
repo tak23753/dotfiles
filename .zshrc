@@ -144,7 +144,7 @@ export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua
 
 # direnv
 if type "direnv" > /dev/null 2>&1; then
-    eval "$(direnv hook zsh)"
+    eval "$(direnv hook zsh 2> /dev/null)"
 fi
 
 # volta
