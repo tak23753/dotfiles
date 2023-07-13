@@ -28,7 +28,6 @@ brew "jq"
 brew "pre-commit"
 brew "aquaproj/aqua/aqua"
 brew "volta"
-brew "direnv"
 brew "shivammathur/php/php@7.4", link: true
 
 cask "alfred"

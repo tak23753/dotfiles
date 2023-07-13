@@ -139,6 +139,9 @@ fi
 # Others
 # ---------------------------------------------------------
 
+# aqua
+export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
+
 # direnv
 if type "direnv" > /dev/null 2>&1; then
     eval "$(direnv hook zsh)"
@@ -147,9 +150,6 @@ fi
 # volta
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
-
-# aqua
-export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
 
 # custom commands
 export PATH="$HOME/commands:$PATH"
