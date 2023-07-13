@@ -27,3 +27,6 @@ done
 # sshの設定
 mkdir -p "$HOME/.ssh"
 ln -fnsv "${SCRIPT_DIR}/etc/.ssh/config" "$HOME/.ssh/"
+
+# Terraformのプラグインキャッシュの設定
+mkdir -p "$HOME/.terraform.d/plugin-cache"
