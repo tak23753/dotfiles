@@ -49,5 +49,8 @@ cask "dropbox"
 cask "session-manager-plugin"
 cask "microsoft-excel"
 cask "ticktick"
+cask "bettertouchtool"
+cask "obsidian"
+cask "cyberduck"
 
 mas "Yoink", id:457622435
