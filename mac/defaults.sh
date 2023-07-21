@@ -26,6 +26,15 @@ defaults -currentHost write -g com.apple.mouse.tapBehavior -bool true
 # カーソル移動速度を速くする
 defaults write -g com.apple.trackpad.scaling -int 3
 
+# 調べる&データ検出を無効化
+defaults write com.apple.trackpad.forceClick -bool false
+
+# フルスクリーンアプリケーション間をスワイプを4本指で左右にスワイプに変更
+defaults write -g com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+
+# Mission Controlを4本指でスワイプに変更
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 0
+
 # ---------------------------------------------------------
 # Keyboard
 # ---------------------------------------------------------
