@@ -30,7 +30,7 @@ defaults write -g com.apple.trackpad.scaling -int 3
 defaults write com.apple.trackpad.forceClick -bool false
 
 # フルスクリーンアプリケーション間をスワイプを4本指で左右にスワイプに変更
-defaults write -g com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
 
 # Mission Controlを4本指でスワイプに変更
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 0
@@ -45,6 +45,9 @@ defaults write -g KeyRepeat -int 2
 
 # 日本語入力でWindows風のキー操作を有効にする
 defaults write com.apple.inputmethod.Kotoeri JIMPrefWindowsModeKey -bool true
+
+# 数字を全角入力を無効化
+defaults write com.apple.inputmethod.Kotoeri JIMPrefFullWidthNumeralCharactersKey -bool false
 
 # ---------------------------------------------------------
 # Dock & Menu bar
