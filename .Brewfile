@@ -52,5 +52,6 @@ cask "ticktick"
 cask "bettertouchtool"
 cask "obsidian"
 cask "cyberduck"
+cask "alt-tab"
 
 mas "Yoink", id:457622435
