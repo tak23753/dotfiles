@@ -100,6 +100,9 @@ defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 "<dic
 # Finderを無効化
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65 "<dict><key>enabled</key><false/></dict>"
 
+# クイックメモのショートカットをoption+qに変更
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 190 "<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>113</integer><integer>12</integer><integer>524288</integer></array><key>type</key><string>standard</string></dict></dict>"
+
 # ---------------------------------------------------------
 # Display
 # ---------------------------------------------------------
