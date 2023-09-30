@@ -169,6 +169,11 @@ function aws_profile_update() {
     [[ -n ${PROFILES_ARRAY[(re)${SELECTED_PROFILE}]} ]] && export AWS_PROFILE=${SELECTED_PROFILE}; echo 'Updated profile' || echo ''
 }
 
+# kubectl
+source <(kubectl completion zsh)
+alias k=kubectl
+compdef __start_kubectl k
+
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
 zinit light-mode for \
