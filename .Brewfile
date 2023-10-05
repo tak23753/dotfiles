@@ -55,5 +55,6 @@ cask "bettertouchtool"
 cask "obsidian"
 cask "cyberduck"
 cask "alt-tab"
+cask "google-cloud-sdk"
 
 mas "Yoink", id:457622435

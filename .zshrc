@@ -176,6 +176,12 @@ if (type "kubectl" > /dev/null 2>&1); then
     compdef __start_kubectl k
 fi
 
+# gcloud
+if (type "gcloud" > /dev/null 2>&1); then
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
+
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
 zinit light-mode for \
