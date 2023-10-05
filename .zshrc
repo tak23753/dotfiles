@@ -170,9 +170,11 @@ function aws_profile_update() {
 }
 
 # kubectl
-source <(kubectl completion zsh)
-alias k=kubectl
-compdef __start_kubectl k
+if (type "kubectl" > /dev/null 2>&1); then
+    source <(kubectl completion zsh)
+    alias k=kubectl
+    compdef __start_kubectl k
+fi
 
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
