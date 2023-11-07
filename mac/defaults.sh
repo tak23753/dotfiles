@@ -49,6 +49,9 @@ defaults write com.apple.inputmethod.Kotoeri JIMPrefWindowsModeKey -bool true
 # 数字を全角入力を無効化
 defaults write com.apple.inputmethod.Kotoeri JIMPrefFullWidthNumeralCharactersKey -bool false
 
+# 文頭を自動的に大文字にするを無効化
+defaults write -g NSAutomaticCapitalizationEnabled -bool false
+
 # ---------------------------------------------------------
 # Dock & Menu bar
 # ---------------------------------------------------------
