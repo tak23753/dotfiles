@@ -30,7 +30,9 @@ brew "aquaproj/aqua/aqua"
 brew "volta"
 brew "shivammathur/php/php@7.4", link: true
 brew "kind"
-brew "kubectl"
+brew "stern"
+brew "coreutils"
+brew "asdf"
 
 cask "alfred"
 cask "slack"

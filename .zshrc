@@ -16,15 +16,15 @@ alias tf="terraform"
 alias tg="terragrunt"
 
 # Git
-alias add="git add"
-alias commit="git commit"
-alias stash="git stash"
-alias push="git push"
-alias pull="git pull"
-alias check="git checkout"
-alias fetch="git fetch"
-alias merge="git merge"
-alias rebase="git rebase"
+alias g='git'
+alias ga='git add -A'
+alias gc='git commit'
+alias gps='git push'
+alias gpl='git pull'
+
+# Kubernetes
+[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases
+function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }
 
 # ---------------------------------------------------------
 # Base settings
@@ -168,6 +168,11 @@ function aws_profile_update() {
 
     [[ -n ${PROFILES_ARRAY[(re)${SELECTED_PROFILE}]} ]] && export AWS_PROFILE=${SELECTED_PROFILE}; echo 'Updated profile' || echo ''
 }
+
+# asdf
+if (type "asdf" > /dev/null 2>&1); then
+    . /opt/homebrew/opt/asdf/libexec/asdf.sh
+fi
 
 # kubectl
 if (type "kubectl" > /dev/null 2>&1); then
