@@ -24,7 +24,10 @@ alias gpl='git pull'
 
 # Kubernetes
 [ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases
-function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }
+# function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }
+
+alias kc="kubie ctx"
+alias kn="kubie ns"
 
 # ---------------------------------------------------------
 # Base settings
@@ -153,6 +156,9 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 
 # custom commands
 export PATH="$HOME/commands:$PATH"
+
+# krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 # Github Copilot Cli
 if (type "github-copilot-cli" > /dev/null 2>&1); then
