@@ -57,12 +57,17 @@ class InstallTests(unittest.TestCase):
         self.assertFalse((self.home / ".local").exists())
         self.assertEqual(
             (self.home / ".config/mise/config.toml").resolve(),
-            ROOT / "mac/etc/mise/config.toml",
+            ROOT / "apps/mise/config.toml",
         )
         first = self.snapshot()
         self.install()
         self.assertEqual(self.snapshot(), first)
-        self.assertIn('source "$HOME/.zsh/additional-settings.zsh"', (ROOT / ".zshrc").read_text())
+        self.assertEqual((self.home / ".Brewfile").read_bytes(), (ROOT / "apps/homebrew/Brewfile").read_bytes())
+        self.assertEqual((self.home / ".p10k.zsh").resolve(), ROOT / "shell/zsh/p10k.zsh")
+        self.assertEqual((self.home / ".terraformrc").resolve(), ROOT / "apps/terraform/terraformrc")
+        self.assertEqual((self.home / ".zsh").resolve(), ROOT / "shell/zsh")
+        self.assertEqual((self.home / ".zshrc").resolve(), ROOT / "shell/zsh/zshrc")
+        self.assertEqual((self.home / ".ssh/config").resolve(), ROOT / "apps/ssh/config")
 
     def test_injection_loading_and_repeat(self):
         self.install("--extra-ssh-config", self.ssh, "--extra-zsh-config", self.zsh)
@@ -156,13 +161,52 @@ class InstallTests(unittest.TestCase):
         self.assertIn("macOS only", result.stderr)
         self.assertEqual(self.snapshot(), {})
 
+    def test_migration_from_old_layout_preserves_extra_settings(self):
+        # Old repository paths become dangling symlinks after the move.
+        old_links = {
+            ".Brewfile": ".Brewfile",
+            ".p10k.zsh": ".p10k.zsh",
+            ".terraformrc": ".terraformrc",
+            ".zsh": ".zsh",
+            ".zshrc": ".zshrc",
+            ".ssh/config": "mac/etc/.ssh/config",
+            ".config/mise/config.toml": "mac/etc/mise/config.toml",
+        }
+        old_repo = self.base / "old dotfiles"
+        for destination, source in old_links.items():
+            link = self.home / destination
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to(old_repo / source)
+        extra = self.home / ".config/dotfiles/extra.zsh"
+        extra.parent.mkdir(parents=True)
+        extra.symlink_to(self.zsh)
+        local = self.home / ".config/dotfiles/local.zsh"
+        local.write_text("export DOTFILES_TEST_SETTING=local\n")
+        ssh_extra = self.home / ".ssh/config.d/50-extra.conf"
+        ssh_extra.parent.mkdir()
+        ssh_extra.symlink_to(self.ssh)
+
+        self.install()
+        for destination, source in old_links.items():
+            link = self.home / destination
+            self.assertTrue(link.exists(), destination)
+            backups = [directory / "original" for directory in link.parent.glob(link.name + ".backup.*")]
+            self.assertEqual(len(backups), 1, destination)
+            self.assertEqual(os.readlink(backups[0]), str(old_repo / source))
+        self.assertEqual(extra.resolve(), self.zsh)
+        self.assertEqual(ssh_extra.resolve(), self.ssh)
+        self.assertEqual(self.shell_setting(), "local")
+        first = self.snapshot()
+        self.install()
+        self.assertEqual(self.snapshot(), first)
+
     def test_invalid_arguments_do_not_change_home(self):
         for args in [
             ("--extra-ssh-config",),
             ("--extra-zsh-config", self.base / "missing"),
             ("--extra-zsh-config", self.company),
-            ("--extra-zsh-config", ROOT / ".zshrc"),
-            ("--extra-ssh-config", ROOT / "mac/etc/.ssh/config"),
+            ("--extra-zsh-config", ROOT / "shell/zsh/zshrc"),
+            ("--extra-ssh-config", ROOT / "apps/ssh/config"),
             ("--extra-ssh-config", self.ssh, "--unknown"),
             ("--extra-ssh-config", self.ssh, "--extra-ssh-config", self.ssh),
         ]:

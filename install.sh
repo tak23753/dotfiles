@@ -25,7 +25,7 @@ while [ "$#" -gt 0 ]; do
             fi
             # Resolve against the caller's directory, not the repository.
             file="$(resolve_file "$2")"
-            if [ "$file" -ef "$SCRIPT_DIR/.zshrc" ] || [ "$file" -ef "$SCRIPT_DIR/mac/etc/.ssh/config" ]; then
+            if [ "$file" -ef "$SCRIPT_DIR/shell/zsh/zshrc" ] || [ "$file" -ef "$SCRIPT_DIR/apps/ssh/config" ]; then
                 printf 'Specify a separate additional configuration file.\n' >&2
                 exit 1
             fi
@@ -66,7 +66,7 @@ if [ "$links_only" = false ]; then
     fi
 fi
 
-bash "$SCRIPT_DIR/scripts/link-personal.sh"
+bash "$SCRIPT_DIR/scripts/link-configs.sh"
 if [ -n "$ssh_config" ]; then
     link_file "$ssh_config" "$HOME/.ssh/config.d/50-extra.conf"
 fi
@@ -75,10 +75,9 @@ if [ -n "$zsh_config" ]; then
 fi
 
 if [ "$links_only" = false ]; then
-    bash "$SCRIPT_DIR/mac/defaults.sh"
-    bash "$SCRIPT_DIR/mac/brew.sh"
-    bash "$SCRIPT_DIR/mac/link.sh"
-    bash "$SCRIPT_DIR/mac/after_install.sh"
+    bash "$SCRIPT_DIR/system/defaults.sh"
+    bash "$SCRIPT_DIR/apps/editors/defaults.sh"
+    bash "$SCRIPT_DIR/scripts/install-tools.sh"
 fi
 
 printf 'Dotfiles installed. Open a new shell to load them.\n'

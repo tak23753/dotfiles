@@ -39,6 +39,7 @@ SSH config 自体を指定せず、追加設定のみを記述した独立した
 
 共通設定 → `~/.config/dotfiles/extra.zsh` → 任意の
 `~/.config/dotfiles/local.zsh` の順に読み込む。
+読み込み処理は `shell/zsh/additional-settings.zsh` が持ち、共通設定の最後に実行する。
 `local.zsh` は機器固有の設定用で、インストーラーは作成・変更しない。
 追加設定が存在しない場合は読み込まない。
 
@@ -49,6 +50,7 @@ SSH config 自体を指定せず、追加設定のみを記述した独立した
 ### SSH
 
 `~/.ssh/config.d/*.conf` → Colima → 共通設定の順に読み込む。
+共通設定の管理元は `apps/ssh/config`、配置先は従来どおり `~/.ssh/config`。
 追加設定の変更は次の接続から有効になる。
 `IdentityFile` は複数指定すると追加されるため、共通側は `github.com` の鍵を
 固定しない。私用の鍵を明示する接続には `github-private` を使う。
