@@ -5,7 +5,7 @@ DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 . "$DOTFILES_DIR/scripts/link.sh"
 
 # Explicit list: never link .git, local drafts, or future repository metadata.
-for name in .Brewfile .gitmessage .p10k.zsh .terraformrc .tmux.conf .zsh .zshrc; do
+for name in .Brewfile .gitmessage .p10k.zsh .terraformrc .zsh .zshrc; do
     link_file "$DOTFILES_DIR/$name" "$HOME/$name"
 done
 
