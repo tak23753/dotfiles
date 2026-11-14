@@ -139,20 +139,9 @@ bindkey -M vicmd \
 zinit light zsh-users/zsh-autosuggestions
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=( down-line-or-select )
 zinit light zsh-users/zsh-syntax-highlighting
-zinit light mollifier/anyframe
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-
-# ---------------------------------------------------------
-# Anyframe
-# ---------------------------------------------------------
-
-# bindkey '^r' anyframe-widget-put-history
-# bindkey '^b' anyframe-widget-checkout-git-branch
-# bindkey '^t' anyframe-widget-cdr
-# autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-# add-zsh-hook chpwd chpwd_recent_dirs
 
 # ---------------------------------------------------------
 # Import zsh files
