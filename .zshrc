@@ -17,7 +17,6 @@ alias t="terraform"
 alias g='git'
 
 # Kubernetes
-# function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }
 alias n="kubectl neat"
 alias nl="kubectl neat | less"
 
@@ -57,18 +56,6 @@ setopt hist_reduce_blanks
 
 # ヒストリに時刻を保存する
 setopt extended_history
-
-# 補完を有効化 (zsh-autocomplete 側で初期化されるため無効化)
-# autoload -Uz compinit && compinit
-
-# 補完で小文字でも大文字にマッチさせる
-# zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-
-# 補完候補をTabや矢印で選択可能
-# zstyle ':completion:*:default' menu select=1
-
-# コマンドのスペルを訂正する
-# setopt correct
 
 # 英数字以外を区切り文字にする
 typeset -g WORDCHARS=
