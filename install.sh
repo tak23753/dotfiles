@@ -82,7 +82,6 @@ fi
 if [ "$links_only" = false ]; then
     case "${OSTYPE}" in
         darwin*)
-            bash "$SCRIPT_DIR/mac/init.sh"
             bash "$SCRIPT_DIR/mac/defaults.sh"
             bash "$SCRIPT_DIR/mac/brew.sh"
             bash "$SCRIPT_DIR/mac/link.sh"
