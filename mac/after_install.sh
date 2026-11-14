@@ -9,11 +9,6 @@ if ! command -v npm >/dev/null 2>&1; then
   volta install npm
 fi
 
-# Install npm packages
-if ! command -v github-copilot-cli >/dev/null 2>&1; then
-  npm install -g @githubnext/github-copilot-cli
-fi
-
 # setting git commit template
 # git config --global commit.template ~/.gitmessage
 

@@ -256,11 +256,6 @@ EOF
   command cloudsql "$@"
 }
 
-# Github Copilot Cli
-if (type "github-copilot-cli" > /dev/null 2>&1); then
-    eval "$(github-copilot-cli alias -- "$0")"
-fi
-
 # history
 setopt extended_history
 alias history='history -t "%F %T"'
