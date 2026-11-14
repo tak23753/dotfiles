@@ -230,7 +230,6 @@ EOF
 }
 
 # history
-setopt extended_history
 alias history='history -t "%F %T"'
 
 # awsp
