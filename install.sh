@@ -85,7 +85,6 @@ if [ "$links_only" = false ]; then
             bash "$SCRIPT_DIR/mac/defaults.sh"
             bash "$SCRIPT_DIR/mac/brew.sh"
             bash "$SCRIPT_DIR/mac/link.sh"
-            bash "$SCRIPT_DIR/mac/command.sh"
             bash "$SCRIPT_DIR/mac/after_install.sh"
             ;;
         linux-gnu*)
