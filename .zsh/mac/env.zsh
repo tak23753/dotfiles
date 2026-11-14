@@ -18,6 +18,3 @@ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agen
 
 # psql
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-
-# docker compose
-export COMPOSE_DOCKER_CLI_BUILD=1
