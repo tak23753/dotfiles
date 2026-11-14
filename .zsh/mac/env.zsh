@@ -1,6 +1,7 @@
 # path
 typeset -U path PATH
 path=(
+  $HOME/.local/bin(N-/)
   /opt/homebrew/bin(N-/)
   /opt/homebrew/sbin(N-/)
   /usr/bin

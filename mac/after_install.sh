@@ -1,25 +1,28 @@
-# Install Node.js
-volta install node
-volta install npm
+#!/bin/bash
+set -eu
+
+# Install only missing runtimes/tools; repeated runs preserve existing versions.
+if ! command -v node >/dev/null 2>&1; then
+  volta install node
+fi
+if ! command -v npm >/dev/null 2>&1; then
+  volta install npm
+fi
 
 # Install npm packages
-npm install -g @githubnext/github-copilot-cli
+if ! command -v github-copilot-cli >/dev/null 2>&1; then
+  npm install -g @githubnext/github-copilot-cli
+fi
 
 # setting git commit template
-git config --global commit.template ~/.gitmessage
+# git config --global commit.template ~/.gitmessage
 
 # Install kubectl_aliases
 if [ ! -f ~/.kubectl_aliases ]; then
-  curl "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
+  curl -fSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
 fi
 
-# Install gke-gcloud-auth-plugin
-gcloud components install gke-gcloud-auth-plugin
+# Install gcloud plugins
+gcloud components install --quiet gke-gcloud-auth-plugin anthos-auth
 
-# Install asdf plugins
-asdf plugin-add kubectl https://github.com/asdf-community/asdf-kubectl.git
-asdf install kubectl latest
-asdf global kubectl latest
-asdf plugin-add kubectx https://github.com/virtualstaticvoid/asdf-kubectx.git
-asdf install kubectx latest
-asdf global kubectx latest
+# kubectl/kubectx are managed in .Brewfile, avoiding repeated asdf registration.

@@ -1,2 +1,5 @@
 .DS_Store
 .env
+
+# Migration drafts/backups and private per-machine configuration
+/.local/
