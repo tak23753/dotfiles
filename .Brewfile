@@ -24,7 +24,6 @@ brew "fujiwara/tap/tracer"
 brew "jq"
 brew "pre-commit"
 brew "aquaproj/aqua/aqua"
-brew "volta"
 brew "shivammathur/php/php@7.4", link: true
 brew "kind"
 brew "kubectl"
