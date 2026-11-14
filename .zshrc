@@ -287,10 +287,6 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
-# . /opt/homebrew/opt/asdf/libexec/asdf.sh
-
-# . /opt/homebrew/opt/asdf/libexec/asdf.sh
-
 source /Users/takashi.fukiwake/.config/op/plugins.sh
 
 # Harlequin ラッパー: harlequin の引数をそのまま受け取り、対象プロファイルが
