@@ -17,7 +17,6 @@ alias t="terraform"
 alias g='git'
 
 # Kubernetes
-# [ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases
 # function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }
 alias n="kubectl neat"
 alias nl="kubectl neat | less"
