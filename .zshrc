@@ -15,20 +15,6 @@ alias t="terraform"
 
 # Git
 alias g='git'
-alias ga='git add -A'
-alias gc='git commit'
-alias gps='git push'
-alias gpl='git pull'
-unalias gdiff 2>/dev/null
-gdiff() {
-  local patch="/tmp/diff_$(date +%Y_%m_%d_%H%M%S).patch"
-  git add -A && git diff --cached > "$patch" && \
-    osascript -e "set the clipboard to (POSIX file \"$patch\")" && \
-    echo "Created & copied: $patch"
-}
-
-# gitui
-alias gui='gitui'
 
 # Kubernetes
 # [ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases
