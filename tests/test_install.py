@@ -124,14 +124,14 @@ class InstallTests(unittest.TestCase):
         (self.home / ".zshrc").write_text("old zshrc\n")
         (self.home / ".zsh").mkdir()
         (self.home / ".zsh/old").write_text("old directory\n")
-        (self.home / ".vimrc").symlink_to(self.home / "missing-target")
+        (self.home / ".terraformrc").symlink_to(self.home / "missing-target")
         self.install()
         for name, expected in [(".zshrc", "old zshrc\n"), (".zsh", "old directory\n")]:
             backups = list(self.home.glob(name + ".backup.*/original"))
             self.assertEqual(len(backups), 1)
             original = backups[0] / "old" if name == ".zsh" else backups[0]
             self.assertEqual(original.read_text(), expected)
-        backup = list(self.home.glob(".vimrc.backup.*"))[0] / "original"
+        backup = list(self.home.glob(".terraformrc.backup.*"))[0] / "original"
         self.assertTrue(backup.is_symlink())
         first = self.snapshot()
         self.install()

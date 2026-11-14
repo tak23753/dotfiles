@@ -20,11 +20,3 @@ fi
 
 # Install zinit
 # bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-
-# Install dein
-mkdir -p ~/.vim/dein
-# curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
-# curl https://raw.githubusercontent.com/Shougo/dein-installer.vim/master/installer.sh > installer.sh
-# sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein-installer.vim/master/installer.sh) ~/.vim/dein --overwrite-config"
-# sh ./installer.sh --overwrite-config
-# rm installer.sh

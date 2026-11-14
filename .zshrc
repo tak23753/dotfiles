@@ -25,9 +25,6 @@ alias nl="kubectl neat | less"
 alias kc="kubie ctx"
 alias kn="kubie ns"
 
-alias vim="nvim"
-alias vi="nvim"
-
 # Others
 alias sops="EDITOR='cursor --wait' sops"
 alias ll='ls -al'
