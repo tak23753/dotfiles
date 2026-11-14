@@ -23,5 +23,11 @@ bash ~/src/dotfiles/install.sh \
 既存の異なる設定は `.backup.XXXXXX/original` にバックアップする。
 引数を省略した追加設定は再実行しても維持する。
 
+ツールのバージョンは mise で管理する。
+[グローバル設定](mac/etc/mise/config.toml) を `~/.config/mise/config.toml` に配置し、
+通常のインストール時に `mise install` で導入する。`--links-only` では設定の配置だけを行う。
+既存プロジェクトの `.tool-versions` も mise で読み込めるため、会社の共有設定はそのまま使える。
+.NET SDK はバージョンごとに分離し、指定した SDK を選択する。
+
 会社ごとの構成・配置規約・作成方法は
 [追加設定のインターフェース](docs/additional-settings.md) を参照。

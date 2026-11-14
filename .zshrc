@@ -242,7 +242,9 @@ function aws_profile_update() {
     [[ -n ${PROFILES_ARRAY[(re)${SELECTED_PROFILE}]} ]] && export AWS_PROFILE=${SELECTED_PROFILE}; echo 'Updated profile' || echo ''
 }
 
-eval "$("$HOME/.local/bin/mise" activate zsh)"
+if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate zsh)"
+fi
 
 # kubectl
 if (type "kubectl" > /dev/null 2>&1); then

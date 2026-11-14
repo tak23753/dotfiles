@@ -26,11 +26,9 @@ brew "pre-commit"
 brew "aquaproj/aqua/aqua"
 brew "shivammathur/php/php@7.4", link: true
 brew "kind"
-brew "kubectl"
-brew "kubectx"
 brew "stern"
 brew "coreutils"
-brew "asdf"
+brew "mise"
 
 cask "alfred"
 cask "docker"

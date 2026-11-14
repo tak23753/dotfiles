@@ -55,6 +55,10 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(self.shell_setting(), "none")
         self.assertFalse((self.home / ".git").exists())
         self.assertFalse((self.home / ".local").exists())
+        self.assertEqual(
+            (self.home / ".config/mise/config.toml").resolve(),
+            ROOT / "mac/etc/mise/config.toml",
+        )
         first = self.snapshot()
         self.install()
         self.assertEqual(self.snapshot(), first)
