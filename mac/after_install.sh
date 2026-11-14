@@ -9,9 +9,6 @@ if ! command -v npm >/dev/null 2>&1; then
   volta install npm
 fi
 
-# setting git commit template
-# git config --global commit.template ~/.gitmessage
-
 # Install kubectl_aliases
 if [ ! -f ~/.kubectl_aliases ]; then
   curl -fSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
