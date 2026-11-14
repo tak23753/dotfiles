@@ -191,9 +191,6 @@ export ANDROID_HOME="$HOME/Library/Android/sdk"
 # rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# claude auto mode
-export CLAUDE_CODE_ENABLE_AUTO_MODE=1
-
 # sdkman
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 
