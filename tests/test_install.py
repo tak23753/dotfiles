@@ -137,6 +137,21 @@ class InstallTests(unittest.TestCase):
         self.install()
         self.assertEqual(self.snapshot(), first)
 
+    def test_unsupported_os_does_not_change_home(self):
+        bin_dir = self.base / "bin"
+        bin_dir.mkdir()
+        uname = bin_dir / "uname"
+        uname.write_text("#!/bin/sh\nprintf 'Linux\\n'\n")
+        uname.chmod(0o755)
+        env = dict(self.env, PATH=str(bin_dir) + os.pathsep + self.env["PATH"])
+        result = subprocess.run(
+            ["bash", str(ROOT / "install.sh"), "--links-only"],
+            cwd=self.base, env=env, text=True, capture_output=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("macOS only", result.stderr)
+        self.assertEqual(self.snapshot(), {})
+
     def test_invalid_arguments_do_not_change_home(self):
         for args in [
             ("--extra-ssh-config",),

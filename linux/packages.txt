@@ -1,7 +1,0 @@
-ca-certificates
-git
-vim
-zsh
-curl
-openssh-client
-peco

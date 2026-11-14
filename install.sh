@@ -47,28 +47,23 @@ while [ "$#" -gt 0 ]; do
 done
 
 # Parse and validate all arguments before changing files or installing tools.
+if [ "$(uname)" != "Darwin" ]; then
+    printf 'This installer supports macOS only.\n' >&2
+    exit 1
+fi
+
 if [ "$links_only" = false ]; then
-    case "${OSTYPE}" in
-        darwin*)
-            if ! command -v brew >/dev/null 2>&1; then
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            fi
-            if [ -x /opt/homebrew/bin/brew ]; then
-                eval "$(/opt/homebrew/bin/brew shellenv)"
-            elif [ -x /usr/local/bin/brew ]; then
-                eval "$(/usr/local/bin/brew shellenv)"
-            fi
-            if ! command -v git >/dev/null 2>&1; then
-                brew install git
-            fi
-            ;;
-        linux-gnu*)
-            if ! command -v git >/dev/null 2>&1; then
-                apt-get install -y git
-            fi
-            ;;
-        *) printf 'Unsupported OS: %s\n' "$OSTYPE" >&2; exit 1 ;;
-    esac
+    if ! command -v brew >/dev/null 2>&1; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+    if [ -x /opt/homebrew/bin/brew ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+    if ! command -v git >/dev/null 2>&1; then
+        brew install git
+    fi
 fi
 
 bash "$SCRIPT_DIR/scripts/link-personal.sh"
@@ -80,18 +75,10 @@ if [ -n "$zsh_config" ]; then
 fi
 
 if [ "$links_only" = false ]; then
-    case "${OSTYPE}" in
-        darwin*)
-            bash "$SCRIPT_DIR/mac/defaults.sh"
-            bash "$SCRIPT_DIR/mac/brew.sh"
-            bash "$SCRIPT_DIR/mac/link.sh"
-            bash "$SCRIPT_DIR/mac/after_install.sh"
-            ;;
-        linux-gnu*)
-            apt-get update
-            xargs -a "$SCRIPT_DIR/linux/packages.txt" apt-get install -y
-            ;;
-    esac
+    bash "$SCRIPT_DIR/mac/defaults.sh"
+    bash "$SCRIPT_DIR/mac/brew.sh"
+    bash "$SCRIPT_DIR/mac/link.sh"
+    bash "$SCRIPT_DIR/mac/after_install.sh"
 fi
 
 printf 'Dotfiles installed. Open a new shell to load them.\n'

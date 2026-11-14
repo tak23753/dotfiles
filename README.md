@@ -2,7 +2,7 @@
 
 ## Installation
 
-まず個人用 dotfiles で基礎環境を構築する。任意の作業ディレクトリで実行できる。
+macOS 用の dotfiles。まず個人用 dotfiles で基礎環境を構築する。任意の作業ディレクトリで実行できる。
 
 ```bash
 git clone https://github.com/Fukiwake/dotfiles.git ~/src/dotfiles

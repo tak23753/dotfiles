@@ -142,14 +142,7 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # ---------------------------------------------------------
 # Import zsh files
 # ---------------------------------------------------------
-case ${OSTYPE} in
-    darwin*)
-    ZSH_DIR="${HOME}/.zsh/mac"
-    ;;
-    linux*)
-    ZSH_DIR="${HOME}/.zsh/linux"
-    ;;
-esac
+ZSH_DIR="${HOME}/.zsh/mac"
 
 # ZSH_DIRがディレクトリで、読み取り、実行、が可能なとき
 if [ -d $ZSH_DIR ] && [ -r $ZSH_DIR ] && [ -x $ZSH_DIR ]; then
