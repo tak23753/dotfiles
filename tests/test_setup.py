@@ -38,6 +38,8 @@ if tool == "killall":
     sys.exit(1)  # An app not running must not abort setup.
 if tool == "brew" and args == ["bundle", "--global"]:
     assert (Path.home() / ".Brewfile").is_file()
+if tool == "brew" and args == ["--prefix"]:
+    print(Path.home() / "homebrew")
 if tool == "mise":
     assert (Path.home() / ".config/mise/config.toml").is_file()
 if tool == "cp":
@@ -52,6 +54,11 @@ def run_setup(repo, home, *, failure="", press_hold="present", links_only=False)
     shutil.copytree(repo, isolated_repo, ignore=shutil.ignore_patterns(".git", ".local", "__pycache__"))
     tools = home.parent / "mock tools"
     tools.mkdir()
+    for plugin in ("docker-compose", "docker-buildx"):
+        executable = home / "homebrew/lib/docker/cli-plugins" / plugin
+        executable.parent.mkdir(parents=True, exist_ok=True)
+        executable.write_text("#!/bin/sh\nexit 0\n")
+        executable.chmod(0o755)
     for name in ("brew", "defaults", "killall", "mise", "gcloud", "cp", "pgrep"):
         executable = tools / name
         executable.write_text(f"#!{sys.executable}\n" + MOCK_TOOL)
@@ -85,13 +92,18 @@ class SetupTests(unittest.TestCase):
             bundle = records.index(["brew", "bundle", "--global"])
             self.assertIn(["defaults", "write", "com.apple.dock", "autohide", "-bool", "true"], records[:bundle])
             self.assertIn(["defaults", "write", "com.microsoft.VSCode", "ApplePressAndHoldEnabled", "-bool", "false"], records[:bundle])
-            self.assertEqual(records[bundle + 1:bundle + 5], [
+            self.assertEqual(records[bundle + 1:bundle + 6], [
+                ["brew", "--prefix"],
                 ["cp", "MesloLGS NF Regular.ttf", "~/Library/Fonts/"],
                 ["cp", "SourceHanCodeJP.ttc", "~/Library/Fonts/"],
                 ["mise", "--cd", str(home), "install"],
                 ["gcloud", "components", "install", "--quiet", "gke-gcloud-auth-plugin"],
             ])
-            gui_records = records[bundle + 5:]
+            for plugin in ("docker-compose", "docker-buildx"):
+                installed = home / ".docker/cli-plugins" / plugin
+                self.assertEqual(installed.resolve(), (home / "homebrew/lib/docker/cli-plugins" / plugin).resolve())
+                self.assertTrue(os.access(installed, os.X_OK))
+            gui_records = records[bundle + 6:]
             self.assertIn(["pgrep", "-x", "iTerm2"], gui_records)
             self.assertFalse(any("Alfred" in argument for row in gui_records for argument in row))
             for domain in ("com.googlecode.iterm2", "com.lwouis.alt-tab-macos"):

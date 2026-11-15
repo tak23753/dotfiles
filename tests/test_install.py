@@ -187,6 +187,22 @@ class InstallTests(unittest.TestCase):
         self.assertIn("macOS only", result.stderr)
         self.assertEqual(self.snapshot(), {})
 
+    def test_rosetta_setup_stops_before_installing_or_changing_home(self):
+        bin_dir = self.base / "bin"
+        bin_dir.mkdir()
+        sysctl = bin_dir / "sysctl"
+        sysctl.write_text("#!/bin/sh\nprintf '1\\n'\n")
+        sysctl.chmod(0o755)
+        result = subprocess.run(
+            ["/bin/bash", str(ROOT / "install.sh")],
+            cwd=self.base,
+            env=dict(self.env, PATH=str(bin_dir) + os.pathsep + self.env["PATH"]),
+            text=True, capture_output=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("native Terminal.app", result.stderr)
+        self.assertEqual(self.snapshot(), {})
+
     def test_migration_from_old_layout_preserves_extra_settings(self):
         # Old repository paths become dangling symlinks after the move.
         old_links = {

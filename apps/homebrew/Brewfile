@@ -2,6 +2,8 @@ cask_args appdir: "/Applications"
 
 brew "curl"
 brew "git"
+# Required by the GitHub workflow in Alfred (macOS no longer bundles PHP).
+brew "php"
 brew "shellcheck"
 brew "tree"
 brew "watch"
@@ -11,8 +13,8 @@ brew "awscli"
 brew "mkcert"
 brew "libpq"
 brew "hadolint"
-brew "goodwithtech/r/dockle"
-brew "aquasecurity/trivy/trivy"
+brew "goodwithtech/r/dockle", trusted: true
+brew "aquasecurity/trivy/trivy", trusted: true
 brew "peco"
 brew "mas"
 brew "jq"
@@ -49,7 +51,7 @@ brew "cypher-shell"
 brew "mcp-inspector"
 brew "herdr"
 brew "hunk"
-brew "buildkite/buildkite/bk@3"
+brew "buildkite/buildkite/bk@3", trusted: true
 brew "mercurial"
 brew "nmap"
 brew "sl"
@@ -91,5 +93,6 @@ cask "font-symbols-only-nerd-font"
 cask "displaylink"
 
 mas "Okta Verify", id: 490179405
-# Existing RunCat app; availability for reinstall needs verification.
-mas "RunCat", id: 1429033973
+# Legacy RunCat is unavailable in the Japanese store as of 2026-11-15.
+# Leave it out of bundle so an unavailable app does not abort tool setup.
+# mas "RunCat", id: 1429033973

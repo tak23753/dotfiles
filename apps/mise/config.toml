@@ -16,6 +16,10 @@ pnpm = "latest"
 rust = "stable"
 skaffold = "latest"
 
+# Gauge has no registry shorthand; declare its plugin for a fresh installation.
+[tool_alias]
+gauge = "asdf:yysushi/asdf-gauge"
+
 [settings.dotnet]
 isolated = true
 

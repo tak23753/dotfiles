@@ -53,14 +53,20 @@ if [ "$(uname)" != "Darwin" ]; then
 fi
 
 if [ "$links_only" = false ]; then
-    if ! command -v brew >/dev/null 2>&1; then
+    if [ "$(sysctl -in sysctl.proc_translated 2>/dev/null || true)" = "1" ]; then
+        printf 'Run setup from a native Terminal.app session (disable Open using Rosetta).\n' >&2
+        exit 1
+    fi
+    # An existing Homebrew may be missing from PATH in a new Terminal session.
+    # Select the native prefix before deciding whether installation is needed.
+    case "$(uname -m)" in
+        arm64) brew_bin=/opt/homebrew/bin/brew ;;
+        *) brew_bin=/usr/local/bin/brew ;;
+    esac
+    if [ ! -x "$brew_bin" ]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
-    if [ -x /opt/homebrew/bin/brew ]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [ -x /usr/local/bin/brew ]; then
-        eval "$(/usr/local/bin/brew shellenv)"
-    fi
+    eval "$("$brew_bin" shellenv)"
     if ! command -v git >/dev/null 2>&1; then
         brew install git
     fi

@@ -10,7 +10,9 @@ if type "direnv" > /dev/null 2>&1; then
 fi
 
 # zoxide
-eval "$(zoxide init zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
+fi
 
 # custom commands
 export PATH="$HOME/commands:$PATH"
@@ -36,7 +38,9 @@ export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # sdkman
-source "$HOME/.sdkman/bin/sdkman-init.sh"
+if [[ -r "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi
 
 # android sdk tools in PATH
 export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
@@ -62,14 +66,21 @@ if (type "kubectl" > /dev/null 2>&1); then
 fi
 
 # gcloud
-if (type "gcloud" > /dev/null 2>&1); then
-    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+if command -v gcloud >/dev/null 2>&1 && command -v brew >/dev/null 2>&1; then
+    for gcloud_init in "$(brew --prefix)/share/google-cloud-sdk/"{path,completion}.zsh.inc; do
+        [[ ! -r "$gcloud_init" ]] || source "$gcloud_init"
+    done
+    unset gcloud_init
 fi
 
 # fzf
-source <(fzf --zsh)
+if command -v fzf >/dev/null 2>&1; then
+    source <(fzf --zsh)
+fi
 
-source /Users/takashi.fukiwake/.config/op/plugins.sh
+# Created by `op plugin init`; it does not exist on a fresh Mac.
+if [[ -r "$HOME/.config/op/plugins.sh" ]]; then
+    source "$HOME/.config/op/plugins.sh"
+fi
 
 source "$HOME/.zsh/functions/harlequin.zsh"

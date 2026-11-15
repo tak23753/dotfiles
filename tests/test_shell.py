@@ -1,7 +1,6 @@
 """Exercise complete Zsh startup with tool hooks replaced by local fixtures."""
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import tempfile
 import unittest
@@ -20,31 +19,12 @@ def prepare_shell_home(home):
         "brew/share/google-cloud-sdk/path.zsh.inc": "trace gcloud-path\n",
         "brew/share/google-cloud-sdk/completion.zsh.inc": "trace gcloud-completion\n",
         ".cache/p10k-instant-prompt-test.zsh": "trace instant-prompt\n",
-        "op-plugins.zsh": "trace op\nexport TEST_OP=loaded\n",
+        ".config/op/plugins.sh": "trace op\nexport TEST_OP=loaded\n",
     }
     for name, content in files.items():
         target = home / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content)
-
-
-def isolate_shell_sources(home):
-    # Patch only disposable copies of the hardcoded 1Password source path.
-    # Wrapping `source` in a function would change Zsh's variable scoping.
-    zsh_dir = home / ".zsh"
-    original = zsh_dir.resolve()
-    zsh_dir.unlink()
-    shutil.copytree(original, zsh_dir)
-    zshrc = home / ".zshrc"
-    content = zshrc.read_text()
-    zshrc.unlink()
-    zshrc.write_text(content)
-    for target in (zshrc, zsh_dir / "integrations.zsh"):
-        if target.exists():
-            target.write_text(target.read_text().replace(
-                "source /Users/takashi.fukiwake/.config/op/plugins.sh",
-                'source "$HOME/op-plugins.zsh"',
-            ))
 
 
 def shell_snapshot(home, fixture=FIXTURE):
@@ -87,7 +67,6 @@ class ShellTests(unittest.TestCase):
                 ["bash", str(ROOT / "install.sh"), "--links-only"],
                 env=dict(os.environ, HOME=str(home)), check=True, capture_output=True,
             )
-            isolate_shell_sources(home)
             config = home / ".config/dotfiles"
             (config / "extra.zsh").write_text("trace extra\nexport TEST_OVERRIDE=extra\n")
             (config / "local.zsh").write_text("trace local\nexport TEST_OVERRIDE=local\n")
@@ -146,6 +125,24 @@ class ShellTests(unittest.TestCase):
             final = [str(home / "Library/Android/sdk/cmdline-tools/latest/bin"),
                      str(home / "Library/Android/sdk/platform-tools"), str(home / "sdk/bin"), *before_sdk]
             self.assertIn("PATH=" + ":".join(final) + "\n", result.stdout)
+
+    def test_integrations_allow_missing_optional_tools_and_settings(self):
+        with tempfile.TemporaryDirectory(prefix="dotfiles-shell-fresh-") as directory:
+            home = Path(directory) / "new home"
+            home.mkdir()
+            (home / ".zsh").symlink_to(ROOT / "shell/zsh", target_is_directory=True)
+            command = r'''
+compdef() { :; }
+source "$HOME/.zsh/integrations.zsh"
+(( $+functions[hq] && $+functions[skaffold] && $+functions[cloudsql] ))
+'''
+            result = subprocess.run(
+                ["/bin/zsh", "-f", "-c", command],
+                env=dict(os.environ, HOME=str(home), PATH="/usr/bin:/bin:/usr/sbin:/sbin"),
+                text=True, capture_output=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stderr, "")
 
 
 if __name__ == "__main__":
