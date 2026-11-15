@@ -1,0 +1,8 @@
+{
+  "alfredsnippet" : {
+    "snippet" : "kubectl run fukiwake-test --image=docker-registry.uzabase.com\/proxy-cache\/curlimages\/curl:latest --restart=Never --rm -it -- sh",
+    "uid" : "483517A4-FA33-4A1A-B099-7FD0D8CC44C5",
+    "name" : "検証用のpodを作成",
+    "keyword" : ""
+  }
+}

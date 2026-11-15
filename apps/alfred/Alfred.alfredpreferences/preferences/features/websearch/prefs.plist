@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>customSites</key>
+	<dict>
+		<key>2F2299D2-2D0A-4E42-9352-5A77483E7336</key>
+		<dict>
+			<key>enabled</key>
+			<false/>
+			<key>keyword</key>
+			<string>dl</string>
+			<key>text</key>
+			<string>DeepL</string>
+			<key>url</key>
+			<string>https://www.deepl.com/ja/translator#en/ja/{query}</string>
+		</dict>
+		<key>314262B6-9886-43CC-8BAA-DE856C18F331</key>
+		<dict>
+			<key>enabled</key>
+			<true/>
+			<key>keyword</key>
+			<string>sakura</string>
+			<key>text</key>
+			<string>Search sakura checker for '{query}'</string>
+			<key>url</key>
+			<string>https://sakura-checker.jp/itemsearch/?word={query}&amp;pass=on</string>
+		</dict>
+		<key>9E65FF7D-F4FF-4A73-8F81-114DBC726651</key>
+		<dict>
+			<key>enabled</key>
+			<true/>
+			<key>keyword</key>
+			<string>pa</string>
+			<key>text</key>
+			<string>Search PerplexityAI for '{query}'</string>
+			<key>url</key>
+			<string>https://www.perplexity.ai/?q={query}</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

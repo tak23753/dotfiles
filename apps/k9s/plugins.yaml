@@ -1,0 +1,14 @@
+plugins:
+  kubie-shell:
+    shortCut: Ctrl-T
+    description: Open Kubie shell
+    scopes:
+      - all
+    command: kubie
+    background: false
+    args:
+      - ctx
+      - $CONTEXT
+      - -n
+      - $NAMESPACE
+      - -r

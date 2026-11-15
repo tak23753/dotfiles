@@ -13,6 +13,17 @@ link_file "$DOTFILES_DIR/shell/zsh/zshrc" "$HOME/.zshrc"
 
 link_file "$DOTFILES_DIR/apps/mise/config.toml" "$HOME/.config/mise/config.toml"
 
+# Link the directory so an atomic save by LinearMouse keeps the link intact.
+link_file "$DOTFILES_DIR/apps/linearmouse" "$HOME/.config/linearmouse"
+link_file "$DOTFILES_DIR/apps/uv/uv.toml" "$HOME/.config/uv/uv.toml"
+# Use the native macOS location (confirmed with `k9s info`). Do not link the
+# whole directory: k9s also stores logs, screen dumps and cluster state there.
+for file in aliases.yaml plugins.yaml; do
+    link_file "$DOTFILES_DIR/apps/k9s/$file" "$HOME/Library/Application Support/k9s/$file"
+done
+copy_file "$DOTFILES_DIR/apps/k9s/config.yaml" "$HOME/Library/Application Support/k9s/config.yaml"
+copy_file "$DOTFILES_DIR/apps/colima/colima.yaml" "$HOME/.colima/default/colima.yaml"
+
 mkdir -p "$HOME/.ssh/config.d" "$HOME/.config/dotfiles" "$HOME/.terraform.d/plugin-cache"
 chmod 700 "$HOME/.ssh" "$HOME/.ssh/config.d"
 link_file "$DOTFILES_DIR/apps/ssh/config" "$HOME/.ssh/config"

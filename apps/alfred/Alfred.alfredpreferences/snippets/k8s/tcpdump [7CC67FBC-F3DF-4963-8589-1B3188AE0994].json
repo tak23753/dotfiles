@@ -1,0 +1,8 @@
+{
+  "alfredsnippet" : {
+    "snippet" : "kubectl debug -it <対象のPOD名> --image=nicolaka\/netshoot --target=<対象のコンテナ名>",
+    "uid" : "7CC67FBC-F3DF-4963-8589-1B3188AE0994",
+    "name" : "tcpdump",
+    "keyword" : ""
+  }
+}

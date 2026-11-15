@@ -78,6 +78,7 @@ if [ "$links_only" = false ]; then
     bash "$SCRIPT_DIR/system/defaults.sh"
     bash "$SCRIPT_DIR/apps/editors/defaults.sh"
     bash "$SCRIPT_DIR/scripts/install-tools.sh"
+    python3 "$SCRIPT_DIR/scripts/app-settings.py" apply
 fi
 
 printf 'Dotfiles installed. Open a new shell to load them.\n'

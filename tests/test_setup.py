@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -19,14 +20,20 @@ import sys
 tool = Path(sys.argv[0]).name
 args = sys.argv[1:]
 record = [tool, *args]
-if tool == "cp":
+if tool == "cp" and args[1].endswith("/Library/Fonts/"):
     record = [tool, Path(args[0]).name, "~/Library/Fonts/"]
 with open(os.environ["TEST_SETUP_TRACE"], "a") as stream:
     stream.write(json.dumps(record) + "\n")
 if tool == os.environ.get("TEST_FAIL_TOOL") and args != ["shellenv"]:
-    sys.exit(23)
+    if tool != "cp" or args[1].endswith("/Library/Fonts/"):
+        sys.exit(23)
 if tool == "defaults" and args[:1] == ["read"]:
     sys.exit(0 if os.environ["TEST_GLOBAL_PRESS_HOLD"] == "present" else 1)
+if tool == "defaults" and args[:1] == ["export"]:
+    import plistlib
+    sys.stdout.buffer.write(plistlib.dumps({}))
+if tool == "pgrep":
+    sys.exit(1)  # No GUI app is running in this isolated setup.
 if tool == "killall":
     sys.exit(1)  # An app not running must not abort setup.
 if tool == "brew" and args == ["bundle", "--global"]:
@@ -40,9 +47,12 @@ if tool == "cp":
 
 def run_setup(repo, home, *, failure="", press_hold="present", links_only=False):
     home.mkdir(parents=True)
+    # Keep local drafts and backups out of the isolated test checkout.
+    isolated_repo = home.parent / "isolated dotfiles"
+    shutil.copytree(repo, isolated_repo, ignore=shutil.ignore_patterns(".git", ".local", "__pycache__"))
     tools = home.parent / "mock tools"
     tools.mkdir()
-    for name in ("brew", "defaults", "killall", "mise", "gcloud", "cp"):
+    for name in ("brew", "defaults", "killall", "mise", "gcloud", "cp", "pgrep"):
         executable = tools / name
         executable.write_text(f"#!{sys.executable}\n" + MOCK_TOOL)
         executable.chmod(0o755)
@@ -58,7 +68,7 @@ function /usr/local/bin/brew { "$TEST_TOOL_DIR/brew" "$@"; }
     env = dict(os.environ, HOME=str(home), BASH_ENV=str(bash_env),
                TEST_TOOL_DIR=str(tools), TEST_SETUP_TRACE=str(trace),
                TEST_FAIL_TOOL=failure, TEST_GLOBAL_PRESS_HOLD=press_hold)
-    args = ["/bin/bash", str(repo / "install.sh")]
+    args = ["/bin/bash", str(isolated_repo / "install.sh")]
     if links_only:
         args.append("--links-only")
     result = subprocess.run(args, cwd=home.parent, env=env, text=True, capture_output=True)
@@ -75,12 +85,17 @@ class SetupTests(unittest.TestCase):
             bundle = records.index(["brew", "bundle", "--global"])
             self.assertIn(["defaults", "write", "com.apple.dock", "autohide", "-bool", "true"], records[:bundle])
             self.assertIn(["defaults", "write", "com.microsoft.VSCode", "ApplePressAndHoldEnabled", "-bool", "false"], records[:bundle])
-            self.assertEqual(records[bundle + 1:], [
+            self.assertEqual(records[bundle + 1:bundle + 5], [
                 ["cp", "MesloLGS NF Regular.ttf", "~/Library/Fonts/"],
                 ["cp", "SourceHanCodeJP.ttc", "~/Library/Fonts/"],
                 ["mise", "--cd", str(home), "install"],
                 ["gcloud", "components", "install", "--quiet", "gke-gcloud-auth-plugin"],
             ])
+            gui_records = records[bundle + 5:]
+            self.assertIn(["pgrep", "-x", "iTerm2"], gui_records)
+            self.assertFalse(any("Alfred" in argument for row in gui_records for argument in row))
+            for domain in ("com.googlecode.iterm2", "com.lwouis.alt-tab-macos"):
+                self.assertTrue(any(row[:3] == ["defaults", "import", domain] for row in gui_records))
             for font in (ROOT / "system/fonts").iterdir():
                 self.assertEqual((home / "Library/Fonts" / font.name).read_bytes(), font.read_bytes())
             # The dictionary was an unused asset before the refactor too.
@@ -91,8 +106,13 @@ class SetupTests(unittest.TestCase):
             home = Path(directory) / "home"
             result, records = run_setup(ROOT, home, links_only=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(records, [])
-            self.assertFalse((home / "Library").exists())
+            # Writable app config files are copied, but no install/defaults
+            # commands or GUI preference restoration run in links-only mode.
+            self.assertEqual([row[0] for row in records], ["cp", "cp"])
+            self.assertEqual([Path(row[1]).name for row in records], ["config.yaml", "colima.yaml"])
+            # k9s uses its native macOS config directory even in links-only mode.
+            self.assertTrue((home / "Library/Application Support/k9s/plugins.yaml").is_file())
+            self.assertFalse((home / "Library/Application Support/Alfred").exists())
 
     def test_setup_stops_when_tool_installation_fails(self):
         for tool in ("brew", "cp", "mise"):

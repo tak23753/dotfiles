@@ -1,0 +1,8 @@
+{
+  "alfredsnippet" : {
+    "snippet" : "while true; do curl http:\/\/localhost{cursor}; sleep 1; done",
+    "uid" : "73D891DD-9F7D-45EF-979A-1FD743AD4A72",
+    "name" : "while",
+    "keyword" : " while"
+  }
+}

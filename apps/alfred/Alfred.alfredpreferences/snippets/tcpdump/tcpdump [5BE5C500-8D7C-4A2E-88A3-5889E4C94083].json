@@ -1,0 +1,8 @@
+{
+  "alfredsnippet" : {
+    "snippet" : "tcpdump -i any -A -s 0 port 80",
+    "uid" : "5BE5C500-8D7C-4A2E-88A3-5889E4C94083",
+    "name" : "tcpdump",
+    "keyword" : ""
+  }
+}

@@ -3,3 +3,7 @@
 
 # Migration drafts/backups and private per-machine configuration
 /.local/
+
+# Alfred uses this directory directly; keep per-Mac and unused Remote data local.
+/apps/alfred/Alfred.alfredpreferences/preferences/local/
+/apps/alfred/Alfred.alfredpreferences/remote/

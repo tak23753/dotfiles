@@ -30,3 +30,19 @@ link_file() {
     fi
     ln -s "$source" "$destination"
 }
+
+# Some applications replace their configuration files when saving. Give them a
+# writable copy instead of a symlink, preserving the previous version on change.
+copy_file() {
+    local source="$1" destination="$2" backup
+    mkdir -p "$(dirname "$destination")"
+    if [ -f "$destination" ] && [ ! -L "$destination" ] && cmp -s "$source" "$destination"; then
+        return
+    fi
+    if [ -e "$destination" ] || [ -L "$destination" ]; then
+        backup="$(mktemp -d "${destination}.backup.XXXXXX")"
+        mv "$destination" "$backup/original"
+        printf 'Backed up %s to %s/original\n' "$destination" "$backup"
+    fi
+    cp "$source" "$destination"
+}

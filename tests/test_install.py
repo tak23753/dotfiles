@@ -68,6 +68,32 @@ class InstallTests(unittest.TestCase):
         self.assertEqual((self.home / ".zsh").resolve(), ROOT / "shell/zsh")
         self.assertEqual((self.home / ".zshrc").resolve(), ROOT / "shell/zsh/zshrc")
         self.assertEqual((self.home / ".ssh/config").resolve(), ROOT / "apps/ssh/config")
+        self.assertEqual((self.home / ".config/linearmouse").resolve(), ROOT / "apps/linearmouse")
+        self.assertEqual((self.home / ".config/uv/uv.toml").resolve(), ROOT / "apps/uv/uv.toml")
+        for name in ("aliases.yaml", "plugins.yaml"):
+            self.assertEqual((self.home / "Library/Application Support/k9s" / name).resolve(), ROOT / "apps/k9s" / name)
+        for source, destination in [
+            ("apps/k9s/config.yaml", "Library/Application Support/k9s/config.yaml"),
+            ("apps/colima/colima.yaml", ".colima/default/colima.yaml"),
+        ]:
+            installed = self.home / destination
+            self.assertFalse(installed.is_symlink())
+            self.assertEqual(installed.read_bytes(), (ROOT / source).read_bytes())
+
+    def test_writable_app_configs_preserve_local_edits_on_reinstall(self):
+        self.install()
+        config = self.home / ".colima/default/colima.yaml"
+        config.write_text("cpu: 4\nmemory: 6\n")
+        k9s = self.home / "Library/Application Support/k9s/config.yaml"
+        k9s.write_text("k9s:\n  refreshRate: 10\n")
+        self.install()
+        for path, expected in [(config, "cpu: 4\nmemory: 6\n"), (k9s, "k9s:\n  refreshRate: 10\n")]:
+            originals = list(path.parent.glob(path.name + ".backup.*/original"))
+            self.assertEqual(len(originals), 1)
+            self.assertEqual(originals[0].read_text(), expected)
+        first = self.snapshot()
+        self.install()
+        self.assertEqual(self.snapshot(), first)
 
     def test_injection_loading_and_repeat(self):
         self.install("--extra-ssh-config", self.ssh, "--extra-zsh-config", self.zsh)

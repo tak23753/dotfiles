@@ -1,0 +1,8 @@
+{
+  "alfredsnippet" : {
+    "snippet" : "kubectl debug <Pod名> -it --image=alpine --copy-to=fukiwake-test --share-processes -- \/bin\/sh",
+    "uid" : "07F600B4-1514-4B87-8966-3B7BEA879021",
+    "name" : "検証用のpodをコピーして作成",
+    "keyword" : ""
+  }
+}

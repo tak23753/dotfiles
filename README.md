@@ -1,84 +1,63 @@
 # dotfiles
 
-## Installation
+macOS 用の環境設定。Homebrew・mise によるツール導入、シェル・macOS・アプリの設定をまとめて行う。
 
-macOS 用の dotfiles。まず個人用 dotfiles で基礎環境を構築する。任意の作業ディレクトリで実行できる。
+## 新しい Mac への移行
+
+設定の適用は標準の **Terminal.app** から実行する。
+**iTerm2・AltTab は終了しておく。**
+
+1. リポジトリを取得する。
+
+   ```bash
+   git clone https://github.com/Fukiwake/dotfiles.git ~/src/dotfiles
+   cd ~/src/dotfiles
+   ```
+
+2. セットアップを実行する。仕事用設定も必要な場合は、下の「追加設定」のコマンドを使う。
+
+   ```bash
+   bash install.sh
+   ```
+
+3. Alfred を起動して Powerpack を有効化し、**Advanced → Set preferences folder…** で
+   `~/src/dotfiles/apps/alfred` を選ぶ（`Alfred.alfredpreferences` が入っている親フォルダ）。
+   メインホットキー（⌘Space）・検索範囲・クリップボード履歴・スニペット自動展開は各 Mac で設定する。
+
+4. 新しいシェルを開き、各アプリでログインや必要な権限の許可を行う。Colima は次で起動する。
+
+   ```bash
+   colima start
+   ```
+
+復元するアプリ設定は iTerm2・Alfred・LinearMouse・AltTab・k9s・uv・Colima。
+Alfred は dotfiles 内の設定を直接使う。Workflow・Snippet・アイコンを Git で管理し、
+Mac ごとの設定と、使っていない Remote のデータは Git 対象外。
+Colima は Apple Silicon 向けで、CPU 4・メモリ 8 GiB・ディスク 160 GiB に設定している。
+認証情報、Colima のコンテナ・Volume などのデータ、機器固有の
+`~/.config/dotfiles/local.zsh` は別途移行する。既存の異なる設定はバックアップしてから配置する。
+
+## 追加設定（必要な場合）
+
+会社用リポジトリを別途取得し、手順 2 で次のように実行する。各引数は任意。
 
 ```bash
-git clone https://github.com/Fukiwake/dotfiles.git ~/src/dotfiles
-bash ~/src/dotfiles/install.sh
-```
-
-仕事用設定が必要な場合は、会社管理のリポジトリを別途取得し、追加したい
-設定ファイルを同じインストーラーに渡す。最初から追加設定と一緒に実行してもよい。
-
-```bash
-bash ~/src/dotfiles/install.sh \
+bash install.sh \
   --extra-ssh-config /path/to/company-dotfiles/ssh/config \
   --extra-zsh-config /path/to/company-dotfiles/zsh/work.zsh
 ```
 
-各引数は任意。`--links-only` を併用すると、ツールのインストールや macOS の設定変更をせずに
-設定を配置できる。同じ指定で繰り返し実行してもリンクは増えない。
-既存の異なる設定は `.backup.XXXXXX/original` にバックアップする。
-引数を省略した追加設定は再実行しても維持する。
+設定ファイルだけ再配置するときは `bash install.sh --links-only`。
+GUI アプリの設定適用やツール導入は行わない。詳しくは[追加設定の仕様](docs/additional-settings.md)を参照。
 
-ツールのバージョンは mise で管理する。
-[グローバル設定](apps/mise/config.toml) を `~/.config/mise/config.toml` に配置し、
-通常のインストール時に `mise install` で導入する。`--links-only` では設定の配置だけを行う。
-既存プロジェクトの `.tool-versions` も mise で読み込めるため、会社の共有設定はそのまま使える。
-.NET SDK はバージョンごとに分離し、指定した SDK を選択する。
+## アプリ設定の保存内容を更新するとき
 
-会社ごとの構成・配置規約・作成方法は
-[追加設定のインターフェース](docs/additional-settings.md) を参照。
-
-## 構成
-
-macOS 専用。設定の対象ごとに配置し、適用する処理は `scripts/` と `install.sh` が担当する。
-リポジトリ内の名前とホームディレクトリへの配置先は
-[`scripts/link-configs.sh`](scripts/link-configs.sh) で明示的に対応させる。
-
-| ディレクトリ | 内容 |
-| --- | --- |
-| `shell/zsh/` | Zsh の基本設定、プラグイン、ツール連携、関数、プロンプト |
-| `system/` | macOS の設定、フォント、ユーザー辞書の保管 |
-| `apps/` | Homebrew、mise、SSH、Terraform、エディタ固有の設定 |
-| `scripts/` | 設定のリンク、ツールとフォントのインストール |
-| `tests/` | 配置・移行、シェル起動、セットアップの検証 |
-
-パッケージ一覧は [`apps/homebrew/Brewfile`](apps/homebrew/Brewfile) で管理し、
-従来どおり `~/.Brewfile` にリンクする。各設定の配置先も変更しない。
-フォントは `~/Library/Fonts/` にコピーする。ユーザー辞書は保管のみで、自動適用しない。
-
-### Zsh の分割と読み込み順
-
-`shell/zsh/zshrc` を `~/.zshrc`、`shell/zsh/` を `~/.zsh` にリンクする。
-`zshrc` は instant prompt → aliases → options → plugins → paths → integrations →
-追加設定の順に読み込む。
-
-`paths.zsh` は基本の PATH と環境変数を設定する。
-ツール固有の PATH 変更は、初期化時に見える PATH の順序を維持するため
-`integrations.zsh` の該当箇所に置く。
-独自関数は `functions/` に分け、`integrations.zsh` から順番を指定して読み込む。
-ファイルを追加しただけでは自動で読み込まない。
-共通設定 → 追加設定 → 機器固有設定の順序は維持する。
-
-### 旧構成からの移行
-
-ファイルを移動したあと、既存のリンクを新しい配置先に更新する。
+Alfred の変更は、そのまま Git の差分になる。
+ほかの 6 アプリの設定を取り込む場合は、iTerm2・AltTab を終了して実行する。
 
 ```bash
-bash /path/to/dotfiles/install.sh --links-only
+python3 scripts/app-settings.py capture
 ```
 
-古いリンクは通常のバックアップ規則で退避する。
-追加設定の引数を省略しても、既存の会社用・機器固有の設定は維持する。
-
-## 検証
-
-```bash
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
-```
-
-一時 HOME で実行し、ツール導入・macOS 設定変更・外部サービス連携はテスト用の処理に置き換える。
-実際のホームディレクトリや OS 設定は変更しない。
+差分を確認してコミットする。不要な Alfred の Workflow・Snippet は Alfred 上で削除する。
+アプリ一覧は [Brewfile](apps/homebrew/Brewfile)、ツールのバージョンは [mise](apps/mise/config.toml) で管理する。
