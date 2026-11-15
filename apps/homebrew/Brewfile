@@ -88,3 +88,8 @@ cask "logitech-camera-settings"
 cask "vibe-island"
 cask "aws-vault-binary"
 cask "font-symbols-only-nerd-font"
+cask "displaylink"
+
+mas "Okta Verify", id: 490179405
+# Existing RunCat app; availability for reinstall needs verification.
+mas "RunCat", id: 1429033973

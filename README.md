@@ -37,6 +37,33 @@ Colima は Apple Silicon 向けで、CPU 4・メモリ 8 GiB・ディスク 160 
 認証情報、Colima のコンテナ・Volume などのデータ、機器固有の
 `~/.config/dotfiles/local.zsh` は別途移行する。既存の異なる設定はバックアップしてから配置する。
 
+### zsh のコマンド履歴の移行
+
+履歴は `~/.zhistory` に最大 10 万件保存される。dotfiles のセットアップとは別に、次の手順で移行する。
+
+1. 旧 Mac の zsh で最新の履歴を保存し、移行用コピーを作る。
+
+   ```zsh
+   fc -AI
+   cp -p "$HISTFILE" ~/zsh-history-export
+   ```
+
+2. `zsh-history-export` を AirDrop などで新しい Mac の `~/Downloads/` に転送する。
+
+3. 新しい Mac でセットアップ後の zsh を開く。ほかのターミナルや IDE 内のシェルは閉じ、
+   この zsh だけを開いた状態で、現在の履歴をバックアップしてから旧 Mac の履歴を取り込む。
+
+   ```zsh
+   fc -W ~/zsh-history-before-import
+   fc -RI ~/Downloads/zsh-history-export
+   fc -W "$HISTFILE"
+   chmod 600 "$HISTFILE"
+   ```
+
+新しい Mac の既存履歴と合わせて、最大 10 万件が保存される。
+履歴にはトークンや接続情報が含まれることがあるため、Git には追加しない。
+移行を確認したら、両 Mac の移行用コピーと、不要になった履歴のバックアップを削除する。
+
 ## 追加設定（必要な場合）
 
 会社用リポジトリを別途取得し、手順 2 で次のように実行する。各引数は任意。
