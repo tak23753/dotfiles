@@ -1,0 +1,28 @@
+# Machine-specific values (user.email, scalar, maintenance) belong in ~/.gitconfig.
+[user]
+	name = Fukiwake
+[alias]
+	st = status
+	co = checkout
+	cm = commit -m
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[core]
+	packedGitLimit = 512m
+	packedGitWindowSize = 512m
+	bigFileThreshold = 50m
+	untrackedCache = true
+	fsmonitor = false
+[pack]
+	windowMemory = 100m
+	packSizeLimit = 100m
+	sparse = true
+[feature]
+	manyFiles = true
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true

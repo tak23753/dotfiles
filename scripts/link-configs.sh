@@ -12,6 +12,10 @@ link_file "$DOTFILES_DIR/shell/zsh" "$HOME/.zsh"
 link_file "$DOTFILES_DIR/shell/zsh/zshrc" "$HOME/.zshrc"
 
 link_file "$DOTFILES_DIR/apps/mise/config.toml" "$HOME/.config/mise/config.toml"
+link_file "$DOTFILES_DIR/apps/git/config" "$HOME/.config/git/config"
+link_file "$DOTFILES_DIR/apps/git/ignore" "$HOME/.config/git/ignore"
+# Without ~/.gitconfig, `git config --global` writes through the link into this repository.
+touch "$HOME/.gitconfig"
 
 # Link the directory so an atomic save by LinearMouse keeps the link intact.
 link_file "$DOTFILES_DIR/apps/linearmouse" "$HOME/.config/linearmouse"

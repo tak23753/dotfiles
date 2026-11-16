@@ -70,6 +70,8 @@ class InstallTests(unittest.TestCase):
         self.assertEqual((self.home / ".ssh/config").resolve(), ROOT / "apps/ssh/config")
         self.assertEqual((self.home / ".config/linearmouse").resolve(), ROOT / "apps/linearmouse")
         self.assertEqual((self.home / ".config/uv/uv.toml").resolve(), ROOT / "apps/uv/uv.toml")
+        self.assertEqual((self.home / ".config/git/config").resolve(), ROOT / "apps/git/config")
+        self.assertEqual((self.home / ".config/git/ignore").resolve(), ROOT / "apps/git/ignore")
         for name in ("aliases.yaml", "plugins.yaml"):
             self.assertEqual((self.home / "Library/Application Support/k9s" / name).resolve(), ROOT / "apps/k9s" / name)
         for source, destination in [
@@ -202,6 +204,20 @@ class InstallTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("native Terminal.app", result.stderr)
         self.assertEqual(self.snapshot(), {})
+
+    def test_git_global_writes_stay_out_of_repository(self):
+        self.install()
+        env = {k: v for k, v in self.env.items() if k not in ("XDG_CONFIG_HOME", "GIT_CONFIG_GLOBAL")}
+        subprocess.run(["git", "config", "--global", "dotfiles.test", "local"], env=env, check=True)
+        self.assertIn("[dotfiles]", (self.home / ".gitconfig").read_text())
+        self.assertNotIn("[dotfiles]", (ROOT / "apps/git/config").read_text())
+
+    def test_existing_gitconfig_is_kept(self):
+        gitconfig = self.home / ".gitconfig"
+        gitconfig.write_text("[user]\n\temail = local@example.com\n")
+        self.install()
+        self.assertFalse(gitconfig.is_symlink())
+        self.assertEqual(gitconfig.read_text(), "[user]\n\temail = local@example.com\n")
 
     def test_migration_from_old_layout_preserves_extra_settings(self):
         # Old repository paths become dangling symlinks after the move.
