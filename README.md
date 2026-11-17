@@ -14,11 +14,13 @@ cd ~/src/dotfiles
 bash install.sh
 ```
 
-`install.sh` でツールの導入と、iTerm2・LinearMouse・AltTab・k9s・uv・Colima の保存済み設定まで適用する。
-既存の異なる設定はバックアップしてから配置する。完了後はログアウト・再ログインし、次を行う。
+`install.sh` でツールの導入と、iTerm2・LinearMouse・AltTab・k9s・uv・Colima・Alfred の保存済み設定まで適用する。
+既存の異なる設定はバックアップしてから配置する。何度実行しても同じ状態になり、設定済みの項目は変更しない。
+起動中のため反映できなかったアプリは表示に従って終了し、`bash install.sh` を再実行する。
+完了後はログアウト・再ログインし、次を行う。
 
 - Alfred：Powerpack を有効化し、**Advanced → Set preferences folder…** で
-  `~/src/dotfiles/apps/alfred` を選ぶ。Alfred を終了してから `python3 scripts/app-settings.py alfred` を実行すると、
+  `~/src/dotfiles/apps/alfred` を選ぶ。Alfred を終了して `bash install.sh` を再実行すると、
   ホットキー・テーマ・検索範囲・クリップボード履歴の有効化などの Mac ごとの設定も
   [共有の設定](apps/alfred/local-preferences)に揃う。
 - 各アプリ：ログインと権限の許可を行う。1Password の SSH Agent も有効化する。

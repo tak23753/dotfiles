@@ -74,24 +74,6 @@ class AppSettingsTests(unittest.TestCase):
         self.assertEqual(len([call for call in self.calls if call[:2] == ["defaults", "import"]]), count)
         self.assertEqual(len(list(self.home.rglob("*.backup.*"))), 1)
 
-    def test_apply_leaves_running_alfred_and_its_settings_untouched(self):
-        support = self.home / "Library/Application Support/Alfred"
-        support.mkdir(parents=True)
-        state = {"current": str(self.repo / "apps/alfred/Alfred.alfredpreferences"), "localhash": "this-mac"}
-        state_file = support / "prefs.json"
-        state_file.write_text(json.dumps(state))
-        original = state_file.read_bytes()
-
-        def running(args, **kwargs):
-            if args[:2] == ["pgrep", "-x"] and args[2] in ["Alfred", "Alfred Preferences"]:
-                return subprocess.CompletedProcess(args, 0)
-            return self.command(args, **kwargs)
-
-        with patch.object(APP.subprocess, "run", side_effect=running):
-            self.apply()
-        self.assertEqual(state_file.read_bytes(), original)
-        self.assertEqual([p.name for p in support.iterdir()], ["prefs.json"])
-
     def alfred_state(self, current=None, localhash="new-mac"):
         support = self.home / "Library/Application Support/Alfred"
         support.mkdir(parents=True, exist_ok=True)
@@ -99,50 +81,62 @@ class AppSettingsTests(unittest.TestCase):
         (support / "prefs.json").write_text(json.dumps({"current": current, "localhash": localhash}))
         return self.repo / "apps/alfred/Alfred.alfredpreferences/preferences/local" / localhash
 
-    def link_alfred(self):
-        with redirect_stdout(io.StringIO()):
-            APP.link_alfred(self.repo, self.home)
+    def running(self, *processes):
+        def command(args, **kwargs):
+            if args[:2] == ["pgrep", "-x"] and args[2] in processes:
+                return subprocess.CompletedProcess(args, 0)
+            return self.command(args, **kwargs)
+        return patch.object(APP.subprocess, "run", side_effect=command)
 
     def test_alfred_shares_local_preferences_across_macs(self):
         local = self.alfred_state()
         APP.write_plist(local / "hotkey/prefs.plist", {"default": {"key": 0}})
-        self.link_alfred()
+        self.apply()
         shared = self.repo / "apps/alfred/local-preferences"
         self.assertTrue(local.is_symlink())
         self.assertFalse(os.path.isabs(os.readlink(local)))
         self.assertEqual(local.resolve(), shared.resolve())
         backups = list(local.parent.glob("new-mac.backup.*/original/hotkey/prefs.plist"))
         self.assertEqual(len(backups), 1)
-        self.link_alfred()
+        with self.running("Alfred", "Alfred Preferences"):
+            output = self.apply()
+        self.assertNotIn("Alfred", output)
         self.assertEqual(len(list(local.parent.glob("new-mac.backup.*"))), 1)
 
-    def test_alfred_must_be_quit_before_linking(self):
+    def test_running_alfred_is_left_untouched_until_rerun(self):
         local = self.alfred_state()
-
-        def running(args, **kwargs):
-            if args == ["pgrep", "-x", "Alfred"]:
-                return subprocess.CompletedProcess(args, 0)
-            return self.command(args, **kwargs)
-        with patch.object(APP.subprocess, "run", side_effect=running):
-            with self.assertRaisesRegex(RuntimeError, "Quit Alfred"):
-                self.link_alfred()
+        state_file = self.home / "Library/Application Support/Alfred/prefs.json"
+        original = state_file.read_bytes()
+        with self.running("Alfred"):
+            output = self.apply()
+        self.assertIn("Quit Alfred", output)
+        self.assertIn("install.sh", output)
         self.assertFalse(local.exists())
+        self.assertEqual(state_file.read_bytes(), original)
+        self.assertEqual([p.name for p in state_file.parent.iterdir()], ["prefs.json"])
 
-    def test_alfred_must_use_dotfiles_preferences_folder(self):
+    def test_alfred_outside_dotfiles_gets_setup_steps(self):
         local = self.alfred_state(current=str(self.home / "Dropbox/Alfred.alfredpreferences"))
-        with self.assertRaisesRegex(RuntimeError, "Set preferences folder"):
-            self.link_alfred()
+        output = self.apply()
+        self.assertIn("Set preferences folder", output)
+        self.assertIn("install.sh", output)
         self.assertFalse(local.exists())
 
-    def test_running_iterm_aborts_before_changing_gui_preferences(self):
-        def running(args, **kwargs):
-            if args == ["pgrep", "-x", "iTerm2"]:
-                return subprocess.CompletedProcess(args, 0)
-            return self.command(args, **kwargs)
-        with patch.object(APP.subprocess, "run", side_effect=running):
-            with self.assertRaisesRegex(RuntimeError, "Quit iTerm2"):
-                self.apply()
-        self.assertEqual(list(self.home.iterdir()), [])
+    def test_running_iterm_is_skipped_while_other_apps_are_restored(self):
+        with self.running("iTerm2"):
+            output = self.apply()
+        self.assertIn("Quit iTerm2", output)
+        self.assertIn("install.sh", output)
+        self.assertEqual(self.defaults[APP.ITERM], {"existing-unmanaged-setting": "keep"})
+        self.assertFalse((self.home / ".config/iterm2").exists())
+        self.assertIn(APP.ALTTAB, self.defaults)
+
+    def test_rerun_with_apps_open_changes_nothing(self):
+        self.apply()
+        with self.running("iTerm2", "AltTab", "Alfred", "Alfred Preferences"):
+            output = self.apply()
+        self.assertNotIn("Quit", output)
+        self.assertEqual(len([call for call in self.calls if call[:2] == ["defaults", "import"]]), 2)
 
     def test_capture_six_apps_keeps_directly_edited_alfred_files(self):
         for source, destination in [

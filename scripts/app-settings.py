@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Capture six app settings, restore iTerm2 and AltTab after Homebrew setup,
-or link this Mac's Alfred per-Mac preferences to the shared copy.
+"""Capture six app settings, or restore iTerm2, AltTab and Alfred after Homebrew setup.
 
 Uses only the standard library. Capturing reads the current Mac but writes only
-inside dotfiles; applying never launches or terminates applications.
+inside dotfiles; applying never launches or terminates applications, skips apps
+that are already up to date, and can be rerun after quitting any skipped app.
 """
 import argparse
 import json
@@ -50,19 +50,43 @@ def backup(path):
     print("Backed up {} to {}/original".format(path, directory))
 
 
+def is_installed(path, content):
+    return path.is_file() and not path.is_symlink() and path.read_bytes() == content
+
+
 def install_bytes(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
-    if path.is_file() and not path.is_symlink() and path.read_bytes() == content:
+    if is_installed(path, content):
         return
     if path.exists() or path.is_symlink():
         backup(path)
     path.write_bytes(content)
 
 
-def update_defaults(home, domain, settings):
+def running_processes(names):
+    running = []
+    for process in names:
+        result = subprocess.run(["pgrep", "-x", process], stdout=subprocess.DEVNULL,
+                                stderr=subprocess.PIPE)
+        if result.returncode == 0:
+            running.append(process)
+        elif result.returncode != 1:
+            result.check_returncode()
+    return running
+
+
+def restore(home, process, domain, settings, files=()):
     current = read_defaults(domain)
     updated = dict(current)
     updated.update(settings)
+    if updated == current and all(is_installed(path, content) for path, content in files):
+        return
+    # A running app would overwrite restored preferences when it quits.
+    if running_processes([process]):
+        print("Skipped {0} preferences. Quit {0} and rerun install.sh to restore them.".format(process))
+        return
+    for path, content in files:
+        install_bytes(path, content)
     if updated == current:
         return
     # Keep a restorable export; do not copy the potentially stale on-disk plist.
@@ -128,56 +152,41 @@ def capture(root, home):
     print("Captured six apps into dotfiles. Alfred edits its Git-managed settings directly.")
 
 
-def running_processes(names):
-    running = []
-    for process in names:
-        result = subprocess.run(["pgrep", "-x", process], stdout=subprocess.DEVNULL,
-                                stderr=subprocess.PIPE)
-        if result.returncode == 0:
-            running.append(process)
-        elif result.returncode != 1:
-            result.check_returncode()
-    return running
-
-
 def apply(root, home):
-    running = running_processes(["iTerm2", "AltTab"])
-    if running:
-        raise RuntimeError("Quit {} before restoring GUI preferences. Run this command "
-                           "from Terminal.app after closing those apps.".format(", ".join(running)))
-
     snapshot = plistlib.loads((root / "apps/iterm2/preferences.plist").read_bytes())
     snapshot = replace_home(snapshot, HOME_TOKEN, str(home))
     iterm_folder = home / ".config/iterm2"
-    install_bytes(iterm_folder / (ITERM + ".plist"), plistlib.dumps(snapshot))
     # Import as well as configure the custom folder, so the first launch has the
     # correct settings even before iTerm2 has loaded its custom-folder preference.
     settings = dict(snapshot, PrefsCustomFolder=str(iterm_folder), LoadPrefsFromCustomFolder=True)
-    update_defaults(home, ITERM, settings)
+    restore(home, "iTerm2", ITERM, settings,
+            [(iterm_folder / (ITERM + ".plist"), plistlib.dumps(snapshot))])
 
     settings = plistlib.loads((root / "apps/alttab/preferences.plist").read_bytes())
-    update_defaults(home, ALTTAB, replace_home(settings, HOME_TOKEN, str(home)))
-    print("iTerm2 and AltTab preferences restored. Launch them after setup.")
-    print("Alfred: activate Powerpack, then choose Advanced > Set preferences folder... > "
-          + str(root / "apps/alfred") + ". Then quit Alfred and run: python3 "
-          + str(root / "scripts/app-settings.py") + " alfred")
+    restore(home, "AltTab", ALTTAB, replace_home(settings, HOME_TOKEN, str(home)))
+    link_alfred(root, home)
 
 
 def link_alfred(root, home):
     preferences = root / "apps/alfred/Alfred.alfredpreferences"
     shared = root / "apps/alfred/local-preferences"
-    running = running_processes(["Alfred", "Alfred Preferences"])
-    if running:
-        raise RuntimeError("Quit {} before linking its preferences.".format(", ".join(running)))
-    state = json.loads((home / "Library/Application Support/Alfred/prefs.json").read_text())
-    if Path(state.get("current", "")).resolve() != preferences.resolve():
-        raise RuntimeError("Set preferences folder to {} in Alfred first.".format(root / "apps/alfred"))
-    if not shared.is_dir():
-        raise RuntimeError("Missing shared Alfred preferences: " + str(shared))
+    state_file = home / "Library/Application Support/Alfred/prefs.json"
+    state = json.loads(state_file.read_text()) if state_file.is_file() else {}
+    # Alfred writes this Mac's hash only after its first launch.
+    if not state.get("localhash") or not state.get("current") \
+            or Path(state["current"]).resolve() != preferences.resolve():
+        print("Alfred: activate Powerpack, then choose Advanced > Set preferences folder... > "
+              + str(root / "apps/alfred") + ". Then quit Alfred and rerun install.sh.")
+        return
     # Alfred keeps hotkey, appearance and search scope under a per-Mac hash.
     # Point this Mac's folder at the shared, Git-managed copy.
     local = preferences / "preferences/local" / state["localhash"]
     if local.is_symlink() and local.resolve() == shared.resolve():
+        return
+    running = running_processes(["Alfred", "Alfred Preferences"])
+    if running:
+        print("Skipped Alfred preferences. Quit {} and rerun install.sh to share them."
+              .format(", ".join(running)))
         return
     local.parent.mkdir(parents=True, exist_ok=True)
     if local.exists() or local.is_symlink():
@@ -188,12 +197,12 @@ def link_alfred(root, home):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["capture", "apply", "alfred"])
+    parser.add_argument("command", choices=["capture", "apply"])
     args = parser.parse_args()
     if sys.platform != "darwin":
         parser.error("This script supports macOS only")
     try:
-        {"capture": capture, "apply": apply, "alfred": link_alfred}[args.command](ROOT, Path.home())
+        {"capture": capture, "apply": apply}[args.command](ROOT, Path.home())
     except (RuntimeError, OSError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, "App settings: {}\n".format(error))
 
