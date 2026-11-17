@@ -93,6 +93,5 @@ cask "font-symbols-only-nerd-font"
 cask "displaylink"
 
 mas "Okta Verify", id: 490179405
-# Legacy RunCat is unavailable in the Japanese store as of 2026-11-15.
-# Leave it out of bundle so an unavailable app does not abort tool setup.
-# mas "RunCat", id: 1429033973
+# Legacy RunCat (1429033973) was removed from the store. Neo is the successor.
+mas "RunCat Neo", id: 6757801838
