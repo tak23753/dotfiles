@@ -92,6 +92,48 @@ class AppSettingsTests(unittest.TestCase):
         self.assertEqual(state_file.read_bytes(), original)
         self.assertEqual([p.name for p in support.iterdir()], ["prefs.json"])
 
+    def alfred_state(self, current=None, localhash="new-mac"):
+        support = self.home / "Library/Application Support/Alfred"
+        support.mkdir(parents=True, exist_ok=True)
+        current = current or str(self.repo / "apps/alfred/Alfred.alfredpreferences")
+        (support / "prefs.json").write_text(json.dumps({"current": current, "localhash": localhash}))
+        return self.repo / "apps/alfred/Alfred.alfredpreferences/preferences/local" / localhash
+
+    def link_alfred(self):
+        with redirect_stdout(io.StringIO()):
+            APP.link_alfred(self.repo, self.home)
+
+    def test_alfred_shares_local_preferences_across_macs(self):
+        local = self.alfred_state()
+        APP.write_plist(local / "hotkey/prefs.plist", {"default": {"key": 0}})
+        self.link_alfred()
+        shared = self.repo / "apps/alfred/local-preferences"
+        self.assertTrue(local.is_symlink())
+        self.assertFalse(os.path.isabs(os.readlink(local)))
+        self.assertEqual(local.resolve(), shared.resolve())
+        backups = list(local.parent.glob("new-mac.backup.*/original/hotkey/prefs.plist"))
+        self.assertEqual(len(backups), 1)
+        self.link_alfred()
+        self.assertEqual(len(list(local.parent.glob("new-mac.backup.*"))), 1)
+
+    def test_alfred_must_be_quit_before_linking(self):
+        local = self.alfred_state()
+
+        def running(args, **kwargs):
+            if args == ["pgrep", "-x", "Alfred"]:
+                return subprocess.CompletedProcess(args, 0)
+            return self.command(args, **kwargs)
+        with patch.object(APP.subprocess, "run", side_effect=running):
+            with self.assertRaisesRegex(RuntimeError, "Quit Alfred"):
+                self.link_alfred()
+        self.assertFalse(local.exists())
+
+    def test_alfred_must_use_dotfiles_preferences_folder(self):
+        local = self.alfred_state(current=str(self.home / "Dropbox/Alfred.alfredpreferences"))
+        with self.assertRaisesRegex(RuntimeError, "Set preferences folder"):
+            self.link_alfred()
+        self.assertFalse(local.exists())
+
     def test_running_iterm_aborts_before_changing_gui_preferences(self):
         def running(args, **kwargs):
             if args == ["pgrep", "-x", "iTerm2"]:

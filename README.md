@@ -18,7 +18,9 @@ bash install.sh
 既存の異なる設定はバックアップしてから配置する。完了後はログアウト・再ログインし、次を行う。
 
 - Alfred：Powerpack を有効化し、**Advanced → Set preferences folder…** で
-  `~/src/dotfiles/apps/alfred` を選ぶ。ホットキー・検索範囲・クリップボード履歴・スニペット自動展開は各 Mac で設定する。
+  `~/src/dotfiles/apps/alfred` を選ぶ。Alfred を終了してから `python3 scripts/app-settings.py alfred` を実行すると、
+  ホットキー・テーマ・検索範囲・クリップボード履歴の有効化などの Mac ごとの設定も
+  [共有の設定](apps/alfred/local-preferences)に揃う。
 - 各アプリ：ログインと権限の許可を行う。1Password の SSH Agent も有効化する。
 - Git：`git config --global user.email <メールアドレス>` を実行する。
 - Colima：`colima start` で起動する（CPU 4・メモリ 8 GiB・ディスク 160 GiB）。

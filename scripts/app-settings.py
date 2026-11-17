@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Capture six app settings, or restore iTerm2 and AltTab after Homebrew setup.
+"""Capture six app settings, restore iTerm2 and AltTab after Homebrew setup,
+or link this Mac's Alfred per-Mac preferences to the shared copy.
 
 Uses only the standard library. Capturing reads the current Mac but writes only
 inside dotfiles; applying never launches or terminates applications.
 """
 import argparse
+import json
 import os
 from pathlib import Path
 import plistlib
@@ -126,15 +128,20 @@ def capture(root, home):
     print("Captured six apps into dotfiles. Alfred edits its Git-managed settings directly.")
 
 
-def apply(root, home):
+def running_processes(names):
     running = []
-    for process in ["iTerm2", "AltTab"]:
+    for process in names:
         result = subprocess.run(["pgrep", "-x", process], stdout=subprocess.DEVNULL,
                                 stderr=subprocess.PIPE)
         if result.returncode == 0:
             running.append(process)
         elif result.returncode != 1:
             result.check_returncode()
+    return running
+
+
+def apply(root, home):
+    running = running_processes(["iTerm2", "AltTab"])
     if running:
         raise RuntimeError("Quit {} before restoring GUI preferences. Run this command "
                            "from Terminal.app after closing those apps.".format(", ".join(running)))
@@ -152,17 +159,41 @@ def apply(root, home):
     update_defaults(home, ALTTAB, replace_home(settings, HOME_TOKEN, str(home)))
     print("iTerm2 and AltTab preferences restored. Launch them after setup.")
     print("Alfred: activate Powerpack, then choose Advanced > Set preferences folder... > "
-          + str(root / "apps/alfred") + ". Set your hotkey and other per-Mac preferences in Alfred.")
+          + str(root / "apps/alfred") + ". Then quit Alfred and run: python3 "
+          + str(root / "scripts/app-settings.py") + " alfred")
+
+
+def link_alfred(root, home):
+    preferences = root / "apps/alfred/Alfred.alfredpreferences"
+    shared = root / "apps/alfred/local-preferences"
+    running = running_processes(["Alfred", "Alfred Preferences"])
+    if running:
+        raise RuntimeError("Quit {} before linking its preferences.".format(", ".join(running)))
+    state = json.loads((home / "Library/Application Support/Alfred/prefs.json").read_text())
+    if Path(state.get("current", "")).resolve() != preferences.resolve():
+        raise RuntimeError("Set preferences folder to {} in Alfred first.".format(root / "apps/alfred"))
+    if not shared.is_dir():
+        raise RuntimeError("Missing shared Alfred preferences: " + str(shared))
+    # Alfred keeps hotkey, appearance and search scope under a per-Mac hash.
+    # Point this Mac's folder at the shared, Git-managed copy.
+    local = preferences / "preferences/local" / state["localhash"]
+    if local.is_symlink() and local.resolve() == shared.resolve():
+        return
+    local.parent.mkdir(parents=True, exist_ok=True)
+    if local.exists() or local.is_symlink():
+        backup(local)
+    local.symlink_to(os.path.relpath(shared, local.parent))
+    print("Alfred now uses the shared preferences in " + str(shared))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["capture", "apply"])
+    parser.add_argument("command", choices=["capture", "apply", "alfred"])
     args = parser.parse_args()
     if sys.platform != "darwin":
         parser.error("This script supports macOS only")
     try:
-        {"capture": capture, "apply": apply}[args.command](ROOT, Path.home())
+        {"capture": capture, "apply": apply, "alfred": link_alfred}[args.command](ROOT, Path.home())
     except (RuntimeError, OSError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, "App settings: {}\n".format(error))
 
