@@ -167,6 +167,14 @@ def apply(root, home):
     link_alfred(root, home)
 
 
+def _shared_files(shared):
+    return [path for path in shared.rglob("*") if path.is_file()]
+
+
+def _same_file(path, source):
+    return path.is_file() and not path.is_symlink() and path.read_bytes() == source.read_bytes()
+
+
 def link_alfred(root, home):
     preferences = root / "apps/alfred/Alfred.alfredpreferences"
     shared = root / "apps/alfred/local-preferences"
@@ -179,9 +187,12 @@ def link_alfred(root, home):
               + str(root / "apps/alfred") + ". Then quit Alfred and rerun install.sh.")
         return
     # Alfred keeps hotkey, appearance and search scope under a per-Mac hash.
-    # Point this Mac's folder at the shared, Git-managed copy.
+    # Its directory walk does not follow a symlink, so copy the shared files
+    # into a real directory instead of linking the hash folder.
     local = preferences / "preferences/local" / state["localhash"]
-    if local.is_symlink() and local.resolve() == shared.resolve():
+    files = _shared_files(shared)
+    if local.is_dir() and not local.is_symlink() \
+            and all(_same_file(local / path.relative_to(shared), path) for path in files):
         return
     running = running_processes(["Alfred", "Alfred Preferences"])
     if running:
@@ -191,7 +202,8 @@ def link_alfred(root, home):
     local.parent.mkdir(parents=True, exist_ok=True)
     if local.exists() or local.is_symlink():
         backup(local)
-    local.symlink_to(os.path.relpath(shared, local.parent))
+    for source in files:
+        install_bytes(local / source.relative_to(shared), source.read_bytes())
     print("Alfred now uses the shared preferences in " + str(shared))
 
 

@@ -88,20 +88,33 @@ class AppSettingsTests(unittest.TestCase):
             return self.command(args, **kwargs)
         return patch.object(APP.subprocess, "run", side_effect=command)
 
-    def test_alfred_shares_local_preferences_across_macs(self):
+    def test_alfred_copies_local_preferences_into_a_real_directory(self):
         local = self.alfred_state()
         APP.write_plist(local / "hotkey/prefs.plist", {"default": {"key": 0}})
         self.apply()
         shared = self.repo / "apps/alfred/local-preferences"
-        self.assertTrue(local.is_symlink())
-        self.assertFalse(os.path.isabs(os.readlink(local)))
-        self.assertEqual(local.resolve(), shared.resolve())
+        self.assertTrue(local.is_dir())
+        self.assertFalse(local.is_symlink())
+        copied = [path for path in local.rglob("*") if path.is_file()]
+        self.assertTrue(copied)
+        self.assertTrue(all(not path.is_symlink() for path in copied))
+        for source in shared.rglob("*.plist"):
+            self.assertEqual((local / source.relative_to(shared)).read_bytes(), source.read_bytes())
         backups = list(local.parent.glob("new-mac.backup.*/original/hotkey/prefs.plist"))
         self.assertEqual(len(backups), 1)
         with self.running("Alfred", "Alfred Preferences"):
             output = self.apply()
         self.assertNotIn("Alfred", output)
         self.assertEqual(len(list(local.parent.glob("new-mac.backup.*"))), 1)
+
+    def test_alfred_replaces_a_directory_symlink_alfred_cannot_read(self):
+        local = self.alfred_state()
+        local.parent.mkdir(parents=True)
+        local.symlink_to(os.path.relpath(self.repo / "apps/alfred/local-preferences", local.parent))
+        self.apply()
+        self.assertFalse(local.is_symlink())
+        source = self.repo / "apps/alfred/local-preferences/features/clipboard/prefs.plist"
+        self.assertEqual((local / "features/clipboard/prefs.plist").read_bytes(), source.read_bytes())
 
     def test_running_alfred_is_left_untouched_until_rerun(self):
         local = self.alfred_state()
