@@ -74,7 +74,6 @@ cask "gcloud-cli"
 cask "chatgpt"
 cask "cursor"
 cask "codex"
-cask "google-chrome", args: { adopt: true }
 cask "plamo-translate"
 cask "notion"
 cask "figma"

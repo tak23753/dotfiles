@@ -12,7 +12,7 @@ fi
 # 既存Macの設定を標準値へ戻す処理は含めない。
 # M5 Max を含む Apple Silicon Mac でも、機器IDを固定せず適用する。
 # ディスプレイ配置・解像度・電源管理は移行先で設定する。
-# Caps Lock などの修飾キーもキーボードごとの機器IDを持つため、移行先で確認する。
+# Caps Lock は内蔵キーボードの機器IDを調べて Control に割り当てる。
 
 # ---------------------------------------------------------
 # Preferences
@@ -27,6 +27,9 @@ defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
 
 # 内蔵トラックパッド: フルスクリーンアプリ間の切り替えを4本指に限定
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+
+# 軌跡の速さ: 10段階の8段目（最大から2段下）
+defaults write -g com.apple.trackpad.scaling -float 2
 
 # ---------------------------------------------------------
 # Mouse & Scroll
@@ -59,6 +62,37 @@ defaults write com.apple.inputmethod.Kotoeri JIMPrefFullWidthNumeralCharactersKe
 # 文頭を自動的に大文字にするを無効化
 defaults write -g NSAutomaticCapitalizationEnabled -bool false
 
+# Caps Lock を Control にする
+# システム設定 > キーボード > キーボードショートカット > 修飾キー
+# 機器IDは機種で変わるので固定しない。VendorID と ProductID がどちらも 0 の
+# 内蔵キーボードでは、hidutil の matching に 0 を渡すと全デバイスへ当たる。
+caps_lock_to_control='<dict><key>HIDKeyboardModifierMappingSrc</key><integer>30064771129</integer><key>HIDKeyboardModifierMappingDst</key><integer>30064771296</integer></dict>'
+builtin_keyboards=0
+while IFS= read -r keyboard; do
+	case "$keyboard" in
+	*'"type":"service"'*'"Built-In":true'*|*'"Built-In":true'*'"type":"service"'*) ;;
+	*) continue ;;
+	esac
+	vendor=$(printf '%s\n' "$keyboard" | sed -n 's/.*"VendorID" *: *\([0-9][0-9]*\).*/\1/p')
+	product=$(printf '%s\n' "$keyboard" | sed -n 's/.*"ProductID" *: *\([0-9][0-9]*\).*/\1/p')
+	product_name=$(printf '%s\n' "$keyboard" | sed -n 's/.*"Product" *: *"\([^"]*\)".*/\1/p')
+	if [ -z "$vendor" ] || [ -z "$product" ] || [ -z "$product_name" ]; then
+		continue
+	fi
+	defaults -currentHost write -g "com.apple.keyboard.modifiermapping.${vendor}-${product}-0" -array "$caps_lock_to_control"
+	if [ "$vendor" = 0 ] && [ "$product" = 0 ]; then
+		keyboard_match='{"PrimaryUsagePage":1,"PrimaryUsage":6,"Product":"'"$product_name"'"}'
+	else
+		keyboard_match=$(printf '{"PrimaryUsagePage":1,"PrimaryUsage":6,"VendorID":%s,"ProductID":%s}' "$vendor" "$product")
+	fi
+	hidutil property --matching "$keyboard_match" --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":30064771129,"HIDKeyboardModifierMappingDst":30064771296}]}' >/dev/null
+	builtin_keyboards=$((builtin_keyboards + 1))
+done < <(hidutil list --ndjson --matching '{"PrimaryUsagePage":1,"PrimaryUsage":6}')
+if [ "$builtin_keyboards" -eq 0 ]; then
+	echo "内蔵キーボードが見つからないため、Caps Lock を変更できません" >&2
+	exit 1
+fi
+
 # ---------------------------------------------------------
 # Dock & Menu bar
 # ---------------------------------------------------------
@@ -74,6 +108,11 @@ defaults write com.apple.dock launchanim -bool false
 
 # 最近起動したアプリを非表示
 defaults write com.apple.dock show-recents -bool false
+
+# ピン留めしたアプリとフォルダを外す（Finder とゴミ箱は残る）
+# install.sh を再実行すると、あとから追加した項目も外れる
+defaults write com.apple.dock persistent-apps -array
+defaults write com.apple.dock persistent-others -array
 
 # メニューバーを常に表示
 defaults write -g AppleMenuBarVisibleInFullscreen -bool true
