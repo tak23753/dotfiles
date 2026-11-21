@@ -12,7 +12,7 @@ fi
 # 既存Macの設定を標準値へ戻す処理は含めない。
 # M5 Max を含む Apple Silicon Mac でも、機器IDを固定せず適用する。
 # ディスプレイ配置・解像度・電源管理は移行先で設定する。
-# Caps Lock は内蔵キーボードの機器IDを調べて Control に割り当てる。
+# Caps Lock は接続中の全キーボード（内蔵・外部）の機器IDを調べて Control に割り当てる。
 
 # ---------------------------------------------------------
 # Preferences
@@ -28,8 +28,8 @@ defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
 # 内蔵トラックパッド: フルスクリーンアプリ間の切り替えを4本指に限定
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
 
-# 軌跡の速さ: 10段階の8段目（最大から2段下）
-defaults write -g com.apple.trackpad.scaling -float 2
+# 軌跡の速さ: 10段階の7段目（最大から3段下）
+defaults write -g com.apple.trackpad.scaling -float 1.5
 
 # ---------------------------------------------------------
 # Mouse & Scroll
@@ -64,13 +64,14 @@ defaults write -g NSAutomaticCapitalizationEnabled -bool false
 
 # Caps Lock を Control にする
 # システム設定 > キーボード > キーボードショートカット > 修飾キー
+# 設定はキーボードごとに保存されるので、実行時に接続していないキーボードには反映されない。
 # 機器IDは機種で変わるので固定しない。VendorID と ProductID がどちらも 0 の
 # 内蔵キーボードでは、hidutil の matching に 0 を渡すと全デバイスへ当たる。
 caps_lock_to_control='<dict><key>HIDKeyboardModifierMappingSrc</key><integer>30064771129</integer><key>HIDKeyboardModifierMappingDst</key><integer>30064771296</integer></dict>'
-builtin_keyboards=0
+keyboards=0
 while IFS= read -r keyboard; do
 	case "$keyboard" in
-	*'"type":"service"'*'"Built-In":true'*|*'"Built-In":true'*'"type":"service"'*) ;;
+	*'"type":"service"'*) ;;
 	*) continue ;;
 	esac
 	vendor=$(printf '%s\n' "$keyboard" | sed -n 's/.*"VendorID" *: *\([0-9][0-9]*\).*/\1/p')
@@ -86,10 +87,10 @@ while IFS= read -r keyboard; do
 		keyboard_match=$(printf '{"PrimaryUsagePage":1,"PrimaryUsage":6,"VendorID":%s,"ProductID":%s}' "$vendor" "$product")
 	fi
 	hidutil property --matching "$keyboard_match" --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":30064771129,"HIDKeyboardModifierMappingDst":30064771296}]}' >/dev/null
-	builtin_keyboards=$((builtin_keyboards + 1))
+	keyboards=$((keyboards + 1))
 done < <(hidutil list --ndjson --matching '{"PrimaryUsagePage":1,"PrimaryUsage":6}')
-if [ "$builtin_keyboards" -eq 0 ]; then
-	echo "内蔵キーボードが見つからないため、Caps Lock を変更できません" >&2
+if [ "$keyboards" -eq 0 ]; then
+	echo "キーボードが見つからないため、Caps Lock を変更できません" >&2
 	exit 1
 fi
 

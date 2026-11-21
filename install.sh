@@ -57,6 +57,24 @@ if [ "$links_only" = false ]; then
         printf 'Run setup from a native Terminal.app session (disable Open using Rosetta).\n' >&2
         exit 1
     fi
+    # Homebrew resets the sudo timestamp on every run, so cached credentials
+    # never carry over between casks. sudo_local survives macOS updates.
+    pam_tid='^auth[[:space:]]+sufficient[[:space:]]+pam_tid\.so'
+    if ! grep -Eq "$pam_tid" /etc/pam.d/sudo_local 2>/dev/null; then
+        if [ ! -e /etc/pam.d/sudo_local ] || cmp -s /etc/pam.d/sudo_local /etc/pam.d/sudo_local.template; then
+            sudo_local="$(mktemp)"
+            sed -E 's/^#(auth[[:space:]]+sufficient[[:space:]]+pam_tid\.so)/\1/' /etc/pam.d/sudo_local.template > "$sudo_local"
+            if grep -Eq "$pam_tid" "$sudo_local"; then
+                printf 'Enabling Touch ID for sudo.\n'
+                sudo install -m 444 -o root -g wheel "$sudo_local" /etc/pam.d/sudo_local
+            else
+                printf 'Skipped Touch ID for sudo: unexpected /etc/pam.d/sudo_local.template.\n' >&2
+            fi
+            rm -f "$sudo_local"
+        else
+            printf 'Skipped Touch ID for sudo: /etc/pam.d/sudo_local has local changes.\n' >&2
+        fi
+    fi
     # An existing Homebrew may be missing from PATH in a new Terminal session.
     # Select the native prefix before deciding whether installation is needed.
     case "$(uname -m)" in
