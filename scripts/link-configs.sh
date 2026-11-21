@@ -20,6 +20,7 @@ touch "$HOME/.gitconfig"
 # Link the directory so an atomic save by LinearMouse keeps the link intact.
 link_file "$DOTFILES_DIR/apps/linearmouse" "$HOME/.config/linearmouse"
 link_file "$DOTFILES_DIR/apps/uv/uv.toml" "$HOME/.config/uv/uv.toml"
+link_file "$DOTFILES_DIR/apps/cursor/settings.json" "$HOME/Library/Application Support/Cursor/User/settings.json"
 # Use the native macOS location (confirmed with `k9s info`). Do not link the
 # whole directory: k9s also stores logs, screen dumps and cluster state there.
 for file in aliases.yaml plugins.yaml; do

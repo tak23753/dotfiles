@@ -14,7 +14,7 @@ cd ~/src/dotfiles
 bash install.sh
 ```
 
-`install.sh` でツールの導入と、iTerm2・LinearMouse・AltTab・k9s・uv・Colima・Alfred の保存済み設定まで適用する。
+`install.sh` でツールの導入と、iTerm2・LinearMouse・AltTab・k9s・uv・Colima・Alfred・Cursor の保存済み設定まで適用する。
 既存の異なる設定はバックアップしてから配置する。何度実行しても同じ状態になり、設定済みの項目は変更しない。
 起動中のため反映できなかったアプリは表示に従って終了し、`bash install.sh` を再実行する。
 完了後はログアウト・再ログインし、次を行う。

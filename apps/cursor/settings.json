@@ -1,0 +1,7 @@
+{
+    "window.autoDetectColorScheme": true,
+    "cursor.composer.queueMessageDefaultBehavior": "steer",
+    "cursor.composer.queueManualSendBehavior2": "steer",
+    "files.autoSave": "afterDelay",
+    "terminal.integrated.fontFamily": "'MesloLGS NF', 'Symbols Nerd Font Mono', monospace"
+}

@@ -70,6 +70,10 @@ class InstallTests(unittest.TestCase):
         self.assertEqual((self.home / ".ssh/config").resolve(), ROOT / "apps/ssh/config")
         self.assertEqual((self.home / ".config/linearmouse").resolve(), ROOT / "apps/linearmouse")
         self.assertEqual((self.home / ".config/uv/uv.toml").resolve(), ROOT / "apps/uv/uv.toml")
+        self.assertEqual(
+            (self.home / "Library/Application Support/Cursor/User/settings.json").resolve(),
+            ROOT / "apps/cursor/settings.json",
+        )
         self.assertEqual((self.home / ".config/git/config").resolve(), ROOT / "apps/git/config")
         self.assertEqual((self.home / ".config/git/ignore").resolve(), ROOT / "apps/git/ignore")
         for name in ("aliases.yaml", "plugins.yaml"):
